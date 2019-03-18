@@ -1,0 +1,8 @@
+expected_dpdx =
+
+ -120.0000
+
+
+average =
+
+ -120.0210

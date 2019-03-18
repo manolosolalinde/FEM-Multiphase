@@ -1,0 +1,9 @@
+build
+*.o
+*.mk
+outfile_*
+outputs/*
+*.ex2*
+*/trash/*
+*-dbg
+*-opt

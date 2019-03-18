@@ -1,0 +1,9 @@
+Como comenzo todo:
+http://cubit.sandia.gov/help-version11.1/finite_element_model/export/exporting_exodus2_file.htm
+
+Lo que funciono:
+http://www.marine.csiro.au/sw/matlab-netcdf.html
+
+Utilidades:
+http://mexcdf.sourceforge.net/
+

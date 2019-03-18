@@ -1,0 +1,170 @@
+data_var_list_all[Level][0] = 0
+data_var_list_all[Level][1] = 0
+data_var_list_all[Level][2] = 1
+data_var_list_all[Level][3] = 0
+end of list 
+data_var_list_all[u][0] = 5
+data_var_list_all[u][1] = 0
+data_var_list_all[u][2] = 1
+data_var_list_all[u][3] = 0
+end of list 
+data_var_list_all[u][0] = 5
+data_var_list_all[u][1] = 0
+data_var_list_all[u][2] = 1
+data_var_list_all[u][3] = 0
+data_var_list_all[v][0] = 5
+data_var_list_all[v][1] = 1
+data_var_list_all[v][2] = 1
+data_var_list_all[v][3] = 0
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 0
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 1
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 0
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 1
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+ EquationSystems
+  n_systems()=11
+   System "Heaviside Function"
+    Type "LinearImplicit"
+    Variables="H" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="FIRST" 
+    n_dofs()=2806
+    n_local_dofs()=2806
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "Kurvature"
+    Type "LinearImplicit"
+    Variables="k" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "LevelSet"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="Level" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "LevelSet Normal"
+    Type "LinearImplicit"
+    Variables="xnormal" "wynormal" "kurv" "auxf" 
+    Finite Element Types="LAGRANGE" "LAGRANGE" "LAGRANGE" "LAGRANGE" 
+    Approximation Orders="SECOND" "SECOND" "SECOND" "SECOND" 
+    n_dofs()=44044
+    n_local_dofs()=44044
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "Navier-Stokes"
+    Type "TransientLinearImplicit"
+    Variables="u" "v" "p" 
+    Finite Element Types="LAGRANGE" "LAGRANGE" "LAGRANGE" 
+    Approximation Orders="SECOND" "SECOND" "FIRST" 
+    n_dofs()=24828
+    n_local_dofs()=24828
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "Refinement"
+    Type "TransientLinearImplicit"
+    Variables="refinement" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "Reinit Corrector"
+    Type "LinearImplicit"
+    Variables="lambda sussman" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "Reinit_LevelSet"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="SgnLevel" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "TEST SYSTEM"
+    Type "LinearImplicit"
+    Variables="OMNI" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "normalx SYSTEM"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="KROBEXss" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "normaly SYSTEM"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="KROBEYss" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=11011
+    n_local_dofs()=11011
+    n_constrained_dofs()=0
+    n_vectors()=3
+
+ Mesh Information:
+  mesh_dimension()=2
+  spatial_dimension()=3
+  n_nodes()=11011
+    n_local_nodes()=11011
+  n_elem()=2700
+    n_local_elem()=2700
+    n_active_elem()=2700
+  n_subdomains()=1
+  n_processors()=1
+  processor_id()=0
+
+Number of partitions = 1
+Interface class information
+  Reference element size: deltax = 0.0666667
+  Selected h refinement level: hlevel = 4
+  Minimum reference element size: deltax_min = 0.00833333
+  Standand interface jump smearing: epsilon = 0.2
+  Minimum interface jump smearing: epsilon_min = 0.1
+  Refinement interface jump smearing: epsilon_ref = 0.36
+
+ Solving step 1 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0242556 dt_tau = 0.2
+ Solving step 2 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0236738 dt_tau = 0.2
+ Solving step 3 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0257192 dt_tau = 0.2
+ Solving step 4 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.020777 dt_tau = 0.2
+ Solving step 5 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0200805 dt_tau = 0.2
+ Solving step 6 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0176093 dt_tau = 0.2
+ Solving step 7 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0165084 dt_tau = 0.2
+ Solving step 8 of system_reinit...  Reinit convergence |sgn - sgn_old|/|sgn| = 0.0150607 dt_tau = 0.2

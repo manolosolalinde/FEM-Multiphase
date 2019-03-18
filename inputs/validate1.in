@@ -1,0 +1,140 @@
+
+# MESH DEFINITION
+
+# Number of elements x [std=8]
+mesh_elements_x = 20
+# Number of elements y [std=12]
+mesh_elements_y = 20
+# Mesh x bottom limit [std=-1.5]
+mesh_xlim_a = -1.0
+# Mesh x upper limit [std=1.5]
+mesh_xlim_b = 1.0
+# Mesh y bottom limit [std=0.0]
+mesh_ylim_a = -1.0
+# Mesh y upper limit [std=4.0]
+mesh_ylim_b = 1.0
+
+
+# REFINEMENT PARAMETERS
+
+
+# Refinement_criteria:local_tolerance < stokes_error.l2_norm()/sqrt_n*refinement_x
+refinement_x = 1.0
+# Local Tolerance
+local_tolerance = 0.1
+# Maximum Number of Refinements const ; max_r_steps=0 -> no navier stokes
+max_r_steps = 2
+# Base Max h leve int ;//std=3
+base_max_h_level = 12
+# Level Set error ceil -> ceil = local_tolerance*lvlset_error_ceil;
+lvlset_error_ceil = 1.5
+# Refinement weights
+weight_u = 1.0
+weight_p = 1.6
+# Epsilon_ref (used for initial refinement) (times epsilon) std=1.25
+epsilon_ref = 1.2
+
+
+#RESULTS PARAMETERS
+
+# Global output save interval const int
+save_interval = 1
+# Reinitialization save interval const int
+save_tau_interval = 1
+# Custom Output folder
+custom_output_foldername = '/home/manolo/ManoloYacyreta/outputs/validate1_01'
+
+
+# PHYSICAL PROPERTIES
+
+# External fluid relative density
+RhoB = 1.0
+# Internal fluid relative density
+RhoA = 0.1
+# External fluid relative viscosity
+MuB = 1
+# Internal fluid relative viscosity std=0.5
+MuA = 0.1
+#Adimensional Reynolds number 5680.5;//3.1944;
+Re = 10.91
+# Adimensional Weber Number ;//102040.8;//1.0204;//
+We = 1
+# Adimensional Froude number ;//10.1;//0.319;//
+Fr = 1
+# Turn Gravity on or off
+gravity_on = 0
+
+
+# INTERFACE AND BOUNDARY DEFINITION
+
+# Epsilon (used in stokes, density, viscosity, corrector) [Real]
+epsilon = 0.1
+# Epsilon_min (used in Sgn(lvl,eps) of reinit, normalx) [Real]
+epsilon_min = 0.05
+# Initial lvlset function selector [0] function_one_bubble
+#                                  [1] function_two_bubbles
+#                                  [2] function_test_reinit
+#                                  [3] function_eliptic_bubble
+#                                  [4] function_supg
+#                                  [5] function_one_phase
+initial_lvlset_function = 3
+# Boundary case selector    [0] Closed boundary
+#                           [1] large tube
+#                           [2] cavity flow
+boundary_case = 0
+
+
+
+#CONTROL PARAMETERS
+
+# Maximum number of timesteps unsigned int
+n_timesteps = 30
+# Allow or disallow variable timesteps bool
+variable_dt = 0
+# Max CFL for reducing time step (will reduce if higher)
+cfl_ceil = 1000
+# Minimum CFL (Can reduce if lower)
+cfl_bottom = 120
+# Initial timestep Real  //std = 0.005
+dt = 0.01
+# Minimum timestep Real
+dt_min = 0.000005
+# Will decrese timestep if n_nonlinear_steps bigger than:
+n_nonlinear_steps_ceil = 8
+# Can increase timestep if n_nonlinear_steps are lower than
+n_nonlinear_steps_bottom = 5
+# Artificial diffusion on Level Set advection Real ;//std = 0.02
+artificial_diffusion_lvl = 0.0000001
+
+
+# NONLINEAR SOLVER
+
+# Maximum number of nonlinear steps unsigned int ;//std=50
+n_nonlinear_steps = 10
+# Nonlinear solver tolerances
+nonlinear_absolute_tolerance = 1.e-8
+nonlinear_relative_tolerance = 1.e-12
+nonlinear_step_tolerance = 1.e-6
+
+
+# REINITIALIZATION PARAMETERS
+
+# Artificial diffusion on Reinitialization Equation Real;//std = 0.005
+artificial_diffusion_reinit = 0.0005
+# Use sussman corrector [bool] std=1 ou 0
+sussman_corrector = 1
+# Initial reinitialization timestep Real ; //std=0.1
+initial_dt_tau = 0.1
+# Reinitialization save step
+reinit_record_step = 1
+# Reinitialization initial number of timesteps int
+n_initial_tau_steps = 100
+# Number of reinitialization timesteps per global timestep int
+n_tau_steps = 5
+# Number of reinitialization timesteps for last global iteration int
+last_n_tau_steps = 100;
+# Reinitialization tolerance Real
+reinit_tolerance = 3.e-5
+
+
+

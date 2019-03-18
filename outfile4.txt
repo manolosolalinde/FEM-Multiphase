@@ -1,0 +1,206 @@
+data_var_list_all[Level][0] = 0
+data_var_list_all[Level][1] = 0
+data_var_list_all[Level][2] = 1
+data_var_list_all[Level][3] = 0
+end of list 
+data_var_list_all[u][0] = 5
+data_var_list_all[u][1] = 0
+data_var_list_all[u][2] = 1
+data_var_list_all[u][3] = 0
+end of list 
+data_var_list_all[u][0] = 5
+data_var_list_all[u][1] = 0
+data_var_list_all[u][2] = 1
+data_var_list_all[u][3] = 0
+data_var_list_all[v][0] = 5
+data_var_list_all[v][1] = 1
+data_var_list_all[v][2] = 1
+data_var_list_all[v][3] = 0
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 0
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 1
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 0
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+data_var_list_all[SgnLevel][0] = 1
+data_var_list_all[SgnLevel][1] = 0
+data_var_list_all[SgnLevel][2] = 1
+data_var_list_all[SgnLevel][3] = 1
+end of list 
+ EquationSystems
+  n_systems()=11
+   System "Heaviside Function"
+    Type "LinearImplicit"
+    Variables="H" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="FIRST" 
+    n_dofs()=891
+    n_local_dofs()=891
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "Kurvature"
+    Type "LinearImplicit"
+    Variables="k" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "LevelSet"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="Level" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "LevelSet Normal"
+    Type "LinearImplicit"
+    Variables="xnormal" "wynormal" "kurv" "auxf" 
+    Finite Element Types="LAGRANGE" "LAGRANGE" "LAGRANGE" "LAGRANGE" 
+    Approximation Orders="SECOND" "SECOND" "SECOND" "SECOND" 
+    n_dofs()=13524
+    n_local_dofs()=13524
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "Navier-Stokes"
+    Type "TransientLinearImplicit"
+    Variables="u" "v" "p" 
+    Finite Element Types="LAGRANGE" "LAGRANGE" "LAGRANGE" 
+    Approximation Orders="SECOND" "SECOND" "FIRST" 
+    n_dofs()=7653
+    n_local_dofs()=7653
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "Refinement"
+    Type "TransientLinearImplicit"
+    Variables="refinement" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "Reinit Corrector"
+    Type "LinearImplicit"
+    Variables="lambda sussman" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "Reinit_LevelSet"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="SgnLevel" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "TEST SYSTEM"
+    Type "LinearImplicit"
+    Variables="OMNI" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=1
+   System "normalx SYSTEM"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="KROBEXss" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=3
+   System "normaly SYSTEM"
+    Type "AdvectionDiffusionTransientLinearImplicit"
+    Variables="KROBEYss" 
+    Finite Element Types="LAGRANGE" 
+    Approximation Orders="SECOND" 
+    n_dofs()=3381
+    n_local_dofs()=3381
+    n_constrained_dofs()=0
+    n_vectors()=3
+
+ Mesh Information:
+  mesh_dimension()=2
+  spatial_dimension()=3
+  n_nodes()=3381
+    n_local_nodes()=3381
+  n_elem()=800
+    n_local_elem()=800
+    n_active_elem()=800
+  n_subdomains()=1
+  n_processors()=1
+  processor_id()=0
+
+Number of partitions = 1
+Interface class information
+  Reference element size: deltax = 0.1
+  Selected h refinement level: hlevel = 1
+  Minimum reference element size: deltax_min = 0.1
+  Standand interface jump smearing: epsilon = 0.2
+  Minimum interface jump smearing: epsilon_min = 0.1
+  Refinement interface jump smearing: epsilon_ref = 0.36
+
+  Refining the mesh... Worst element error = 0, mean = 0...mesh now have 800 active elements
+
+Solving time step  1, time=0.0100...with dt: 0.01
+ Linear solver converged at step: 139, final residual: 0.000750472  Nonlinear convergence: ||u - u_old||/||u|| = 1   ||u|| = 17277.7
+  Refining the mesh... Worst element error = 11.4839, mean = 0.263175...mesh now have 1148 active elements
+ Linear solver converged at step: 89, final residual: 0.000408941  Nonlinear convergence: ||u - u_old||/||u|| = 0.00055546   ||u|| = 20316.9
+  Refining the mesh... Worst element error = 16.6268, mean = 0.212475...mesh now have 1148 active elements
+ Linear solver converged at step: 30, final residual: 0.000137917  Nonlinear convergence: ||u - u_old||/||u|| = 3.28016e-06   ||u|| = 20316.9
+  Refining the mesh... Worst element error = 16.6269, mean = 0.212478...mesh now have 1148 active elements
+ Linear solver converged at step: 43, final residual: 1.57939e-05  Nonlinear convergence: ||u - u_old||/||u|| = 7.45202e-07   ||u|| = 20316.9
+ Nonlinear solver converged at step 3
+  Max tsupg = 0.00223553
+  Max CFL = 0.239931
+ Solving system_lvlset...
+
+--------------------------------------------------------------------
+| Time:           Wed Mar 16 20:27:40 2011                          |
+| OS:             Linux                                             |
+| HostName:       ACARAY                                            |
+| OS Release:     2.6.32-27-generic                                 |
+| OS Version:     #49-Ubuntu SMP Thu Dec 2 00:51:09 UTC 2010        |
+| Machine:        x86_64                                            |
+| Username:       manolo                                            |
+| Configuration:  ./configure run on Wed Feb  2 17:36:24 BRST 2011  |
+--------------------------------------------------------------------
+ -----------------------------------------------------------------------------------------------------------
+|  Performance: Alive time=8.02171, Active time=8.02112                                                     |
+ -----------------------------------------------------------------------------------------------------------
+| Event                         nCalls    Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
+|                                         w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
+|-----------------------------------------------------------------------------------------------------------|
+|                                                                                                           |
+| Curvature and Heaviside       1         0.3186      0.318618    0.3186      0.318618    3.97     3.97     |
+| Full Program                  1         2.2966      2.296593    8.0211      8.021121    28.63    100.00   |
+| Level Set Advection           1         0.1144      0.114352    0.1144      0.114352    1.43     1.43     |
+| Navier Stokes                 1         5.2912      5.291163    5.2912      5.291163    65.97    65.97    |
+| Reinitialization              1         0.0004      0.000394    0.0004      0.000394    0.00     0.00     |
+ -----------------------------------------------------------------------------------------------------------
+| Totals:                       5         8.0211                                          100.00            |
+ -----------------------------------------------------------------------------------------------------------
+
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+Option left: name:--enable-reference-counting no value 

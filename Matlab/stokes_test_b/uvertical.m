@@ -1,0 +1,51 @@
+
+importfile('info1.txt');
+%filename = 'out_t_a_04.ex2.0080';
+%filename = 'out_t_a_03.ex2.0023';
+filename = 'out_t_b_03.ex2.6749';
+filename2 = 'out_anim_t_b_03.ex2';
+
+%step = 900;
+step = -1;
+u = getnc(filename,'vals_nod_var8',[step,-1],[step,-1])';
+coordy = getnc(filename,'coordy');
+coordx = getnc(filename,'coordx');
+%time = getnc(filename,'time_whole')';
+
+
+i=1;
+while i<=length(coordy)
+    if coordx(i)~=0.5
+        coordx(i) = [];
+        coordy(i) = [];
+        u(i) = [];
+        i=i-1;
+    end
+    i=i+1;
+end
+
+real_u = u';
+real_y = coordy;
+
+cfun2 = fit(real_y,real_u,'pchipinterp');%pchipinterp %splineinterp
+
+clear yvar;
+clear vvar;
+count = 0;
+for i=0:0.001:1
+    count = count +1;
+   yvar(count) = i;
+   vvar(count) = cfun2(i);
+end
+
+%plot(y,x10000, 'DisplayName', 'x10000 vs y', 'XDataSource', 'y', 'YDataSource', 'x10000');
+%hold all;
+%plot(cfun);
+plot_verticalu(vvar,yvar,x10000,y);
+
+    
+    
+    
+    
+    
+    

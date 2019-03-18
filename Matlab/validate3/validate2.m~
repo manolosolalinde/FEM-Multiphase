@@ -1,0 +1,60 @@
+L = 0.04;
+U = 0.02429;
+sigma = 0.02429;
+mu_ref = 8.9e-4 * 10e2;
+rho_ref = 1000;
+
+R = 0.67082*0.04;
+
+% Internal fluid density
+RhoA = 100;
+
+% External fluid density
+RhoB = 1;
+
+% Internal fluid viscosity std=0.5
+MuA = 35;
+
+% External fluid viscosity
+MuB = 0.1;
+
+omega = sqrt(24*sigma/((3*RhoA+2*RhoB)*rho_ref*R^3))
+
+level = getnc('out_anim.ex2','vals_nod_var2',[-1,1],[1,-1])';
+coordy = getnc('out_anim.ex2','coordy');
+coordx = getnc('out_anim.ex2','coordx');
+time = getnc('out_anim.ex2','time_whole')';
+
+i = length(coordx);
+level(:) = [];
+time(i) = [];
+analitic = 1.4+(0.9-0.5)*cos(omega*time);
+
+
+i=1;
+while i<=length(coordx)
+    if coordx(i)~=0
+        coordx(i) = [];
+        coordy(i) = [];
+        level(i,:) = [];
+        i=i-1;
+    end;
+    i=i+1;
+end
+
+
+clear D;
+for i=1:(length(level))
+    cfun = fit(coordy,level(:,i),'splineinterp');
+    D(i) = fzero(cfun,max(coordy)) - fzero(cfun,min(coordy));
+end;
+
+createfigure(time,D,analitic);
+
+
+    
+    
+    
+    
+    
+    

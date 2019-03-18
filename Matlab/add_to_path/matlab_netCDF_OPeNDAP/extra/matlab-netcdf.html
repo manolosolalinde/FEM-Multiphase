@@ -1,0 +1,1286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>netCDF/OPeNDAP interface to matlab</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.1  (Linux)">
+	<META NAME="CREATED" CONTENT="20050922;13333800">
+	<META NAME="CHANGED" CONTENT="20071017;15344300">
+	<META NAME="DESCRIPTION" CONTENT="The CSIRO netCDF/OPeNDAP interface to matlab is used in a matlab session to retrieve data from local netCDF files or OPeNDAP servers. The interface has options for automatically handling missing values, scalefactors, and permutation of hyperslabs. It also has a simple syntax.">
+	<META NAME="KEYWORDS" CONTENT="CSIRO matlab netCDF OPeNDAP interface">
+	<STYLE TYPE="text/css">
+	<!--
+		H1 { color: #000000 }
+		P { color: #000000 }
+		PRE { color: #000000 }
+		H3 { color: #000000 }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-AU" TEXT="#000000" DIR="LTR">
+<H1 ALIGN=CENTER>The CSIRO netCDF/OPeNDAP interface to matlab</H1>
+<P ALIGN=CENTER><FONT SIZE=6><B>Version 4.03</B></FONT></P>
+<P ALIGN=CENTER><FONT SIZE=6><B>17 October 2007</B></FONT></P>
+<P><A HREF="#Introduction"><FONT SIZE=4 STYLE="font-size: 16pt">Introduction</FONT></A></P>
+<P><A HREF="#Summary"><FONT SIZE=4 STYLE="font-size: 16pt">Summary of
+functions</FONT></A></P>
+<UL>
+	<LI><P><A HREF="#inqnc"><FONT SIZE=4 STYLE="font-size: 16pt">inqnc</FONT></A></P>
+	<LI><P><A HREF="#getnc"><FONT SIZE=4 STYLE="font-size: 16pt">getnc</FONT></A></P>
+	<LI><P><A HREF="#timenc"><FONT SIZE=4 STYLE="font-size: 16pt">timenc</FONT></A></P>
+	<LI><P><A HREF="#attnc"><FONT SIZE=4 STYLE="font-size: 16pt">attnc</FONT></A></P>
+	<LI><P><A HREF="#ddsnc"><FONT SIZE=4 STYLE="font-size: 16pt">ddsnc</FONT></A></P>
+	<LI><P><A HREF="#whatnc"><FONT SIZE=4 STYLE="font-size: 16pt">whatnc</FONT></A></P>
+</UL>
+<P><A HREF="#Installation"><FONT SIZE=4 STYLE="font-size: 16pt">Installation</FONT></A></P>
+<P><A HREF="#Drivers"><FONT SIZE=4 STYLE="font-size: 16pt">Drivers</FONT></A></P>
+<P><A HREF="#Portability"><FONT SIZE=4 STYLE="font-size: 16pt">Portability
+and known problems</FONT></A></P>
+<P><A HREF="#Revision"><FONT SIZE=4 STYLE="font-size: 16pt">Revision
+history</FONT></A></P>
+<P><A HREF="#Alternative"><FONT SIZE=4 STYLE="font-size: 16pt">Alternative
+ways of accessing netCDF and OPeNDAP data</FONT></A></P>
+<P><A HREF="#Disclaimer"><FONT SIZE=4 STYLE="font-size: 16pt">Disclaimer</FONT></A></P>
+<P><A HREF="#People"><FONT SIZE=4 STYLE="font-size: 16pt">People
+involved in the development of the interface</FONT></A></P>
+<P><A HREF="#Contact"><FONT SIZE=4 STYLE="font-size: 16pt">Contact
+details</FONT></A></P>
+<HR>
+<H1><A NAME="Introduction"></A>Introduction</H1>
+<P>The CSIRO interface is used in a <A HREF="http://www.mathworks.com/">matlab</A>
+session to retrieve data from either a local <A HREF="http://www.unidata.ucar.edu/software/netcdf/">netCDF</A>
+file or via an <A HREF="http://opendap.org/">OPeNDAP/DODS</A> server.
+The same commands are used for either type of access in almost every
+case (some small differences are discussed <A HREF="#Portability">here</A>).</P>
+<P><FONT SIZE=3>The interface has options for automatically handling
+missing values, scalefactors, and the permutation of hyperslabs. It
+also has a simple syntax.</FONT></P>
+<P>The method of installing the software is described <A HREF="#Installation">here</A>.</P>
+<P>There are other ways of accessing netCDF files and OPeNDAP/DODS
+data and some of them are discussed briefly <A HREF="#Alternative">here</A>.</P>
+<HR>
+<H1><A NAME="Summary"></A>Summary of functions</H1>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>Basic
+functions</FONT></FONT></P>
+<P>There are six basic functions which are used to access datasets
+either from locally held netCDF files or via an OPeNDAP/DODS server.</P>
+<P>If dealing with a netCDF file then the first argument to each
+function will be a file name. For example,
+'/home/netcdf-data/sst_cac_recon_ltm.nc' is a full file name
+(including a path) to a certain netCDF file at the CSIRO Marine Labs.
+The same file is available via an OPeNDAP/DODS server with the url
+'<A HREF="http://www.marine.csiro.au/dods/nph-dods/dods-data/climatology-netcdf/sst_cac_recon_ltm.nc.html">http://www.marine.csiro.au/dods/nph-dods/dods-data/climatology-netcdf/sst_cac_recon_ltm.nc</A>'.
+In the examples that follow we will use this file.</P>
+<P>The six basic functions are:</P>
+<UL>
+	<LI><P ALIGN=LEFT STYLE="background: transparent"><A HREF="#inqnc"><FONT SIZE=4 STYLE="font-size: 16pt">inqnc</FONT></A>
+	: interactive inquiry of the dataset</P>
+</UL>
+<UL>
+	<LI><P ALIGN=LEFT STYLE="background: transparent"><A HREF="#getnc"><FONT SIZE=4 STYLE="font-size: 16pt">getnc</FONT></A>
+	: imports variables from the dataset</P>
+</UL>
+<UL>
+	<LI><P ALIGN=LEFT STYLE="background: transparent"><A HREF="#timenc"><FONT SIZE=4 STYLE="font-size: 16pt">timenc</FONT></A>
+	: imports the time vector of the dataset</P>
+</UL>
+<UL>
+	<LI><P ALIGN=LEFT STYLE="background: transparent"><A HREF="#attnc"><FONT SIZE=4 STYLE="font-size: 16pt">attnc</FONT></A>
+	: imports attributes from the dataset</P>
+	<LI><P ALIGN=LEFT STYLE="background: transparent"><A HREF="#ddsnc"><FONT SIZE=4 STYLE="font-size: 16pt">ddsnc</FONT></A>
+	: returns information about the dataset</P>
+	<LI><P ALIGN=LEFT STYLE="background: transparent"><A HREF="#whatnc"><FONT SIZE=4 STYLE="font-size: 16pt">whatnc</FONT></A>
+	: lists netCDF files in current directory</P>
+</UL>
+<P>For a more detailed description of the functions and some examples
+just follow the links. For an introduction it is suggested that you
+look at the functions in the order that they are listed above. Of
+course documentation is also available using the matlab help
+facility.</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>Auxiliary
+functions</FONT></FONT></P>
+<P STYLE="background: transparent">There are also some auxiliary
+functions which are listed below. Use the matlab help facility for a
+more detailed description of them. You will not usually want to call
+these directly although some of the time related functions may be
+useful on occasion.</P>
+<UL>
+	<LI><P STYLE="background: transparent">check_nc : checks whether a
+	netcdf or OPeNDAP file is accessible</P>
+	<LI><P STYLE="background: transparent">check_st : checks if a string
+	is stored in a cell or character array</P>
+	<LI><P STYLE="background: transparent">fill_att : returns the names
+	of the attributes of a variable</P>
+	<LI><P STYLE="background: transparent">fill_var : fills a row of an
+	array with the name of a variable</P>
+	<LI><P STYLE="background: transparent">get_calendar_date : converts
+	Julian day numbers to calendar dates</P>
+	<LI><P STYLE="background: transparent">get_day_of_week : gets the
+	day of the week given the Julian day number</P>
+	<LI><P STYLE="background: transparent">get_dods_dds : finds the
+	Dataset Descriptor Structure (DDS) for a DODS/OPeNDAP data set</P>
+	<LI><P STYLE="background: transparent">get_julian_day : converts
+	calendar dates to Julian day numbers</P>
+	<LI><P STYLE="background: transparent">getnc_s : command line
+	version of getnc</P>
+	<LI><P STYLE="background: transparent">get_serial_time : find the
+	absolute time value given a relative time</P>
+	<LI><P STYLE="background: transparent">gregorian : converts Julian
+	day numbers to Gregorian calendar date</P>
+	<LI><P STYLE="background: transparent">hms2h: converts hours,
+	minutes, and seconds to hours</P>
+	<LI><P STYLE="background: transparent">julian : converts Gregorian
+	calendar dates to Julian day numbers</P>
+	<LI><P STYLE="background: transparent">loaddap : direct calls to get
+	DODS/OPeNDAP data and metadata</P>
+	<LI><P STYLE="background: transparent">menu_old : generate a menu of
+	choices for user input</P>
+	<LI><P STYLE="background: transparent">mexnc : direct calls to
+	netcdf functions</P>
+	<LI><P STYLE="background: transparent">parsetnc : parses the COARDS
+	string that specifies time units</P>
+	<LI><P STYLE="background: transparent">pos_cds : returns the path to
+	the common data set directory</P>
+	<LI><P STYLE="background: transparent">return_v : prints out a
+	string to prompt the user for keyboard input</P>
+	<LI><P STYLE="background: transparent">s2hms : converts seconds to
+	integer hour,minute,seconds</P>
+	<LI><P STYLE="background: transparent">tmexnc : test of mexnc
+	Mex-file interface to NetCDF</P>
+	<LI><P STYLE="background: transparent">uncmp_nc : offers to
+	uncompress a netCDF file</P>
+	<LI><P STYLE="background: transparent">y_rescal : returns the
+	scalars rescale_var and rescale_att</P>
+</UL>
+<UL>
+	<LI><P STYLE="background: transparent">whatnc : lists netCDF files
+	in current directory</P>
+</UL>
+<HR>
+<H1><A NAME="inqnc"></A>inqnc</H1>
+<P>inqnc is an interactive function that is used to find out about
+the structure of a netCDF file or OPeNDAP dataset. In the latter case
+you could use a web browser for the same purpose. Try clicking on the
+url
+'<A HREF="http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc.html">http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc</A>'&nbsp;
+to see this structure. The same information is found in the matlab
+example below. Of course, the output from inqnc will be almost
+identical if we look at the netCDF file on a local disk.</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>Example</FONT></FONT></P>
+<PRE>&gt;&gt; file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; inqnc(file)
+ --- Global attributes ---
+source: Test program
+ 
+The 5 dimensions are 1) dim_unlmited = 3 2) depth1 = 12 3) depth2 = 11 4) dim3 = 3 5) dim4 = 4.
+dim_unlmited is unlimited in length
+ 
+----- Get further information about the following variables -----
+ 
+ -1) None of them (no further information)
+ 0) All of the variables
+ 1) time 2) u 3) ureverse
+ 4) uchar1 5) uchar2 6) uchar3
+ 7) ushort 8) ulong 9) udouble
+ 10) no_atts 11) big_var 12) depth1
+ 13) depth2 14) dim3 
+ 
+Select a menu number: 1
+ 
+ --- Information about time(dim_unlmited ) ---
+ 
+*units: days since 1990-1-1 00:00:0.0 *long_name: Time
+ 
+----- Get further information about the following variables -----
+ 
+ -1) None of them (no further information)
+ 0) All of the variables
+ 1) time 2) u 3) ureverse
+ 4) uchar1 5) uchar2 6) uchar3
+ 7) ushort 8) ulong 9) udouble
+ 10) no_atts 11) big_var 12) depth1
+ 13) depth2 14) dim3 
+ 
+Select a menu number: 2
+ --- Information about u(depth1 depth2 ) ---
+ 
+*long_name: u,5_januarys *units: cm/sec
+*ml__FillValue: 10000000270000000 *missing_value: 10000000270000000 
+*valid_range: -10000000270000000 10000000270000000 
+*test_double: 100 2000 *test_short: 25 -3 19 
+*test_long: -4 333 -17 *scale_factor: 3 
+*add_offset: 0.5 
+ 
+----- Get further information about the following variables -----
+ 
+ -1) None of them (no further information)
+ 0) All of the variables
+ 1) time 2) u 3) ureverse
+ 4) uchar1 5) uchar2 6) uchar3
+ 7) ushort 8) ulong 9) udouble
+ 10) no_atts 11) big_var 12) depth1
+ 13) depth2 14) dim3 
+ 
+Select a menu number: -1</PRE>
+<HR>
+<H1><A NAME="getnc"></A>getnc</H1>
+<H3><A NAME="Introduction_getnc"></A><B>Introduction</B></H3>
+<P>getnc retrieves data in two ways. It can be used&nbsp;<A HREF="#getnc_interactive">used
+interactively</A> to retrieve data from a netCDF file.<BR><BR>getnc
+is more commonly used as a function call - it can then retrieve data
+from both netCDF and OPeNDAP files. Because many options&nbsp;are
+available&nbsp;getnc can take up to 11 <A HREF="#getnc_meanings_defaults">input
+arguments</A> (although most have default values). To make things
+easier for the user there are <A HREF="#getnc_specifying_arguments">various
+ways of specifying</A> these arguments. Finally, a number of <A HREF="#getnc_examples">examples</A>
+are given.</P>
+<H3><A NAME="getnc_interactive"></A><B>Interactive use</B></H3>
+<P>To retrieve data interactively the user simply types in&nbsp; 
+</P>
+<PRE STYLE="margin-bottom: 0.2in">&gt;&gt; val = getnc(file);</PRE><P>
+where file is a string containing the name of the netCDF file. From
+there the user is prompted for more information.</P>
+<H3><A NAME="getnc_meanings_defaults"></A><B>Arguments - meanings and
+defaults</B></H3>
+<P>There are 11 variables that getnc must know. Don't be frightened
+however as there are some easy ways to specify them and all but two
+have defaults. The variables are:</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in"><B>file</B>: This is a string
+	containing the name of the netCDF file or the URL to the OPeNDAP
+	dataset. It does not have a default. If describing a netCDF file it
+	is permissible to drop the &quot;.nc&quot; prefix but this is not
+	recommended. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B>varid: &nbsp;</B>This may be a
+	string or an integer. If it is a string then it should be the name
+	of the variable in the netCDF file or OPeNDAP dataset. The use of an
+	integer is a deprecated way of accessing netCDF file data; if used
+	the integer then must be the menu number of the n dimensional
+	variable as shown by a call to inqnc. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B>bl_corner: </B>This is a vector
+	of length n specifying the hyperslab corner&nbsp;with the lowest
+	index values (the bottom left-hand corner in a 2-space).&nbsp; The
+	corners refer to the dimensions in the same order that these
+	dimensions are listed in the inqnc description of the&nbsp;variable.
+	For a netCDF file this is the same order that they are&nbsp;returned
+	in a call to &quot;ncdump&quot;. With an OPeNDAP dataset it is
+	the&nbsp;same order as in the DDS. Note also that the
+	indexing&nbsp;starts with 1 - as in matlab and fortran, NOT 0 as in
+	C. A negative element means that all values in&nbsp;that direction
+	will be returned.&nbsp; If a negative scalar (or an empty array) is
+	used this&nbsp;means that all of the elements in the array will be
+	returned. This is the default, i.e., all of the elements of varid
+	will be returned. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B>tr_corner: </B>This is a vector
+	of length n specifying the hyperslab corner with the highest index
+	values (the top right-hand corner in a 2-space). A negative element
+	means that the returned hyperslab should run to the highest possible
+	index (this is the default). Note, however, that the value of an
+	element in the end_point vector will be ignored if the corresponding
+	element in the corner vector is negative. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B>stride: </B>This is a vector of
+	length n specifying the interval between accessed values of the
+	hyperslab (sub-sampling) in each of the n dimensions.&nbsp; A value
+	of 1 accesses adjacent values in the given dimension; a value of 2
+	accesses every other value; and so on. If&nbsp;no sub-sampling is
+	required in any direction then it is allowable&nbsp;to just pass the
+	scalar 1 (or -1 to be consistent with the corner&nbsp;and end_point
+	notation). Note, however, that the value of an&nbsp;element in the
+	stride vector will be ignored if the corresponding&nbsp;element in
+	the corner vector is negative. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B>order:&nbsp;</B> 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">order == -1 then the n dimensions
+		of the array will be returned&nbsp;in the same order&nbsp;as
+		described by a call to inqnc(file)&nbsp;or &quot;ncdump&quot;. It
+		therefore corresponds to the order in which the indices are
+		specified in corner, end_point and stride. This is the default. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">order == -2 will reverse the
+		above order. Because&nbsp;matlab's array storage is row-dominant
+		this is actually a little quicker but the difference is rarely
+		significant. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><B>change_miss:&nbsp;</B>Missing
+	data are indicated by the attributes _FillValue, missing_value,
+	valid_range, valid_min and valid_max. The action to be taken with
+	these data are determined by change_miss. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">change_miss == 1 causes missing
+		values to be returned unchanged. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">change_miss == 2 causes missing
+		values to be changed to NaN (the default). 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">change_miss == 3 causes missing
+		values to be changed to new_miss (after rescaling if that is
+		necessary). 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">change_miss &lt; 0 produces the
+		default (missing values to be changed to NaN). 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><B>new_miss:&nbsp;</B>This is the
+	value given to missing data if change_miss == 3. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><B>squeeze_it: </B>This specifies
+	whether the matlab function &quot;squeeze&quot; should be applied to
+	the returned array. This will eliminate any singleton
+	array&nbsp;dimensions and possibly cause the returned array to have
+	less dimensions than the full array. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">squeeze_it ~= 0 causes the
+		squeeze function to&nbsp;be applied.&nbsp; This is the default.
+		Note also that a 1-d array is returned as a column vector. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">squeeze_it == 0 so that squeeze
+		will not be applied. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><A NAME="rescale_opts"></A><B>rescale_opts:
+	</B>This is a 2 element vector specifying whether or not rescaling
+	is carried out on retrieved variables and certain attributes. The
+	relevant attributes&nbsp;are _FillValue', 'missing_value',
+	'valid_range',&nbsp;'valid_min' and 'valid_max'; they are used to
+	find missing values of the relevant variable. The option was put in
+	to deal with files that do not follow the <A HREF="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">netCDF
+	conventions</A> (usually because the creator of the file has
+	misunderstood the convention). For further discussion of the problem
+	see <A HREF="#Confusion">here</A>. <I><U>Only use this option if you
+	are sure that you know what you are doing</U>.</I> 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">rescale_opts(1) == 1 causes a
+		variable read in by getnc.m to be rescaled by 'scale_factor' and&nbsp;
+		'add_offset' if these are attributes of the variable; this is the
+		default. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">rescale_opts(1) == 0 disables
+		rescaling of the retrieved variable. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">rescale_opts(2) == 1 causes the
+		attributes '_FillValue', etc to be rescaled by 'scale_factor' and
+		'add_offset'; this is the default. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">rescale_opts(2)&nbsp;== 0
+		disables the rescaling of the attributes '_FillValue', etc.</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><B>err_opt: </B>This is an integer
+	that controls the error handling in a call to getnc.</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">err_opt == 0 on error this prints
+		an error message and&nbsp;aborts. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">err_opt == 1 prints a warning
+		message and then returns an empty array. This is the default. 
+		</P>
+		<LI><P>err_opt == 2 returns an empty array. <U><I>This is a
+		dangerous option and should only be used with caution</I></U>. It
+		might be used when&nbsp;getnc is called in a loop and you want to
+		do your own error handling without being bothered by warning
+		messages. 
+		</P>
+	</UL>
+</OL>
+<H3><A NAME="getnc_specifying_arguments"></A><B>Arguments - ways of
+specifying</B></H3>
+<P><BR>Specifying up to 11 arguments to getnc can be complicated and
+confusing. To make the process easier getnc will accept a variety of
+types of input. These are given as follows:</P>
+<UL>
+	<LI><P><B>Specify all 11 arguments</B>.&nbsp;Thus we could make a
+	call like: 
+	</P>
+</UL>
+<P STYLE="margin-left: 0.42in">&gt;&gt; values = getnc(file, varid,
+bl_corner, tr_corner, stride, order, change_miss, new_miss,
+squeeze_it, rescale_opts, err_opt);</P>
+<UL>
+	<LI><P><B>Use default arguments</B>. Only the first 2 arguments are
+	strictly necessary as the other arguments all have defaults. The
+	following call would retrieve the entire contents of the named
+	variable: 
+	</P>
+</UL>
+<PRE STYLE="margin-left: 0.42in; margin-bottom: 0.2in">&gt;&gt; values = getnc(file, varid);</PRE><P STYLE="margin-left: 0.42in">
+If you want non-default behaviour for one or more of the later
+arguments then you can do something like:</P>
+<PRE STYLE="margin-left: 0.42in; margin-bottom: 0.2in">&gt;&gt; values = getnc(file, varid, -1, -1, -1, -1, change_miss, new_miss);</PRE><P STYLE="margin-left: 0.42in">
+In this case there are 4 arguments specified and 7 with default
+values used.</P>
+<UL>
+	<LI><P><B>Use a structure as an argument.</B> From version 3.3
+	onwards it is possible to pass a structure to getnc. This is
+	illustrated below: 
+	</P>
+</UL>
+<PRE STYLE="margin-left: 0.42in">&gt;&gt; x.file = 'fred.nc';
+&gt;&gt; x.varid = 'foo';
+&gt;&gt; x.change_miss = 1;
+&gt;&gt; values = getnc(x);</PRE><P STYLE="margin-left: 0.42in">
+This specifies 3 arguments and causes defaults to be used for the
+other 8.<BR>Note that it is possible to mix the usual arguments with
+the passing of a structure - it is only necessary that the structure
+be the last argument passed. We could achieve the same effect as
+above by doing:</P>
+<PRE STYLE="margin-left: 0.42in">&gt;&gt; x.change_miss = 1;
+&gt;&gt; values = getnc('fred.nc', 'foo', x);</PRE><H3>
+<A NAME="getnc_examples"></A><B>Examples</B></H3>
+<P>In the following examples we use our standard OPeNDAP file
+&quot;http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc&quot;
+to illustrate the usage of getnc 
+</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get an entire
+	array</FONT></FONT> 
+	</P>
+</UL>
+<P>The simplest command line call to make is the following:</P>
+<PRE>&gt;&gt; file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; u = getnc(file, 'u');</PRE><P>
+The first argument specified is the file name or url. The second
+argument is the name of the variable - we could have found this by
+using inqnc. The result is that the entire contents of the <I>u</I>
+variable will be returned to the matlab session.</P>
+<P>Alternatively we could have passed a structure to getnc to get the
+same answer.</P>
+<PRE>&gt;&gt; x.file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; x.varid = 'u';
+&gt;&gt; u = getnc(x);</PRE>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get part of an
+	array</FONT></FONT> 
+	</P>
+</UL>
+<P>We may only want a part of the variable and that is what the 3
+arguments (<I>bl_corner, tr_corner, stride</I>) are about. If we use
+inqnc to consider the <I>u</I> variable described in our example file
+we see that it has two dimensions (<I>(depth1 depth2</I>) in that
+order. We say that the variable is in a 2-dimensional rectangle. We
+also saw that there are 12 and 11 points in each of the directions.
+Thus we can imagine extracting a subset of the data known as a
+hyperslab. The argument <I>bl_corner</I> specifies the bottom left
+hand corner of the hyperslab, <I>tr_corner</I> specifies the top
+right-hand corner and <I>stride</I> specifies the sampling done. An
+example to illustrate this is shown below.</P>
+<PRE>&gt;&gt; u = getnc(file, 'u', [-1 3], [-1 9], [-1 2]);
+&gt;&gt; size(u)
+ans =
+ 12 4</PRE><P>
+The 1<SUP>st</SUP> element in each of these arguments is -1 to
+indicate that we want to retrieve every point in that direction.
+Hence the 1<SUP>st</SUP> dimension of <I>u </I>is of length 12 &ndash;
+the full number of elements in the <I>depth1</I> dimension. Now
+<I>bl_corner</I>(2) = 3, <I>tr_corner</I>(2) = 9 and <I>stride</I>(2)
+= 2. This means that in the <I>depth2</I> direction we want every
+secondpoint from the 3<SUP>rd</SUP> to the 9<SUP>th</SUP>, i.e.,
+points 3, 5, 7 and 9. Hence the 2<SUP>nd</SUP> dimension of <I>u</I>
+is of length 4.</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Changing the
+	order of the dimensions in the returned array</FONT></FONT> 
+	</P>
+</UL>
+<P>The next argument to discuss is <I>order. </I>In general it is
+best not use this option and just use the default (-1). The option
+allows you to reverse the dimensions in the returned value. Since
+netCDF files store data in row-major order but matlab does the
+opposite, it is possible, in principle, to make some efficiencies
+when retrieving data from a local netCDF file. However this is rarely
+significant and the option is only retained for backwards
+compatibility with older versions of getnc. (For OPeNDAP files
+setting <I>order</I> = -2 is always less efficient than -1.) 
+</P>
+<P>The following example illustrates this.</P>
+<PRE>&gt;&gt; u = getnc(file, 'u'); 
+&gt;&gt; size(u)
+ans =
+ 12 11
+&gt;&gt; ut = getnc(file, 'u', -1, -1, -1, -2);
+&gt;&gt; size(ut) 
+ans =
+ 11 12</PRE><P>
+Note that in the 2<SUP>nd</SUP> case we have used -1, -1, -1 for the
+<I>corner, end_point, stride </I>arguments to indicate that we want
+the default case of getting all possible values. We could have passed
+a structure to get the same result as below:</P>
+<PRE>&gt;&gt; x.file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; x.varid = 'u';
+&gt;&gt; x.order = -2;
+&gt;&gt; ut = getnc(x); 
+&gt;&gt; size(ut)
+ans =
+ 11 12</PRE>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Missing Values</FONT></FONT>
+		</P>
+</UL>
+<P>The default behaviour of getnc is to replace missing values in the
+data with NaNs. (By missing values we mean those values equal to the
+<I>_FillValue</I> or <I>missing_value</I> attribute or outside the
+range determined by the <I>valid_min</I>, <I>valid_max</I> or
+<I>valid_range</I> attribute. This is discussed in the netCDF user's
+guide at
+<A HREF="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html#Attribute-Conventions">http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html#Attribute-Conventions</A>.)
+The pair of arguments <I>change_miss</I> and <I>new_miss</I> can
+change this. If <I>change_miss</I> = 1 then any missing values are
+returned unchanged. If <I>change_miss</I> = 2 then they are changed
+to a NaN (the default, also available as <I>change_miss</I> = -1). If
+<I>change_miss</I> = 3 then any missing values are replaced by
+<I>new_miss.</I></P>
+<P STYLE="font-style: normal">This is illustrated in the following
+example &ndash; note that we pass a structure, x, here and have made
+sure that x is empty at the start.</P>
+<PRE>&gt;&gt; x = [];
+&gt;&gt; x.file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; x.varid = 'u';
+&gt;&gt; x.bl_corner = [12 11];
+&gt;&gt; x.tr_corner = [12 11];
+&gt;&gt; u = getnc(x)
+u =
+ NaN</PRE><P>
+We use the simplest version of <I>getnc</I> to retrieve the last
+value of the array &ndash; we get a NaN because the value actually
+stored in the dataset is marked as a missing value. Next we
+try&nbsp;<I>change_miss</I> = 1,</P>
+<PRE>&gt;&gt; x.change_miss = 1;
+&gt;&gt; u = getnc(x) 
+u =
+ 3.0000e+16</PRE><P>
+Now, 3.0000e+16, the value actually stored in the file, is returned.
+Finally, we use <I>change_miss</I> = 3 to cause the missing value to
+be replaced by 1.5 in our matlab array.</P>
+<PRE>&gt;&gt; x.change_miss = 3;
+&gt;&gt; x.new_miss = 1.5;
+&gt;&gt; u = getnc(x) 
+u =
+ 1.5000</PRE>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Singleton
+	dimensions</FONT></FONT> 
+	</P>
+</UL>
+<P>The next argument, <I>squeeze_it</I>, deals with singleton
+dimensions (i.e., those of length 1). If <I>squeeze_it</I> = 1 (the
+default behaviour) then any singleton dimension will be eliminated as
+if the matlab function squeeze had been applied. If <I>squeeze_it</I>
+= 0 then the singleton dimensions will remain. This is illustrated in
+the following examples. 
+</P>
+<PRE>&gt;&gt; big_var = getnc(file, 'big_var', [-1 2 2 5 -1], [-1 2 2 5 -1]);
+&gt;&gt; size(big_var)
+ans =
+ 12 3
+&gt;&gt; big_var = getnc(file, 'big_var', [-1 2 2 5 -1], [-1 2 2 5 -1], -1, -1, -1, -1, 0);
+&gt;&gt; size(big_var)
+ans =
+ 3 1 1 1 12</PRE><P>
+This option is not really necessary any more because matlab has the
+squeeze function. It was originally put in to enable backwards
+compatibility with earlier versions of <I>getnc </I>written before
+matlab dealt with multi-dimensional arrays and so we are stuck with
+it.</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Error handling</FONT></FONT>
+		</P>
+</UL>
+<P>From version 3.3 onwards getnc has given the user some control
+over error handling. In the examples below we ask for a non-existent
+variable. The default behaviour (err_opt == 2) returns an empty array
+and prints a warning message as below.</P>
+<PRE>&gt;&gt; junk = getnc(file, 'junk')
+WARNING: junk is not a variable in http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc
+junk =
+ []</PRE><P>
+Setting err_opt == 1 causes getnc to be aborted due to the
+non-existent variable as seen below.</P>
+<PRE>&gt;&gt; x = []; 
+&gt;&gt; x.err_opt = 1; 
+&gt;&gt; junk = getnc(file, 'junk', x)
+??? Error using ==&gt; getnc_s&gt;error_handle
+ERROR: junk is not a variable in http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc
+Error in ==&gt; getnc_s at 872
+ values = error_handle([], mess_str, [], err_opt);
+Error in ==&gt; getnc at 211
+ values = getnc_s(varargin);</PRE><P>
+Finally, can see the dangerous option err_opt == 3 which causes an
+empty array to be returned and no error message.</P>
+<PRE>&gt;&gt; x.err_opt = 3; 
+&gt;&gt; junk = getnc(file, 'junk', x)
+junk =
+ []</PRE><P STYLE="margin-bottom: 0in">
+This might be used when getnc is called in a loop and you don't want
+to get a large number of error messages. Of course you should be
+careful to handle the returned values properly.</P>
+<HR>
+<H1><A NAME="timenc"></A>timenc</H1>
+<P>timenc finds the time vector and the corresponding base date for a
+netCDF file or DODS/OPeNDAP dataset that follows the <A HREF="http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html">COARDS
+conventions</A>. In practice this means that time-like variable
+should have a units attribute of a certain form. An example is: 
+</P>
+<P><B>'seconds since 1992-10-8 15:15:42.5 -6:00'.</B></P>
+<P STYLE="font-style: normal">This indicates seconds since October
+8th, 1992 at 3 hours, 15 minutes and 42.5 seconds in the afternoon in
+the time zone which is six hours to the west of Coordinated Universal
+Time (i.e. Mountain Daylight Time). The time zone specification can
+also be written without a colon using one or two-digits (indicating
+hours) or three or four digits (indicating hours and minutes).
+Instead of 'seconds' the string may contain 'minutes', 'hours',
+'days' and 'weeks' and all of these may be singular or plural and
+have capital first letters. The letters 'UTC' or 'UT' are allowed at
+the end of the string, but these are ignored.</P>
+<P>It is possible to have many different types of calendars but
+timenc only implements five at present.</P>
+<P>These are necessary because there is some confusion with dates
+before October 15 1582 when the <A HREF="http://en.wikipedia.org/wiki/Gregorian_calendar">Gregorian
+calendar</A> was introduced. A problem also arises when the reference
+date in the units attribute is before this. timenc deals with this by
+recognising some of the <A HREF="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html">CF
+conventions</A> and returns different answers depending on the value
+of the calendar attribute of the time-like variable. Also, some
+numerical models like to pretend that every year has the same number
+of days - 365, 366 and 360 are all used.</P>
+<OL>
+	<LI><P>calendar = 'standard', 'gregorian' or is not specified. In
+	this case the relevant calculations are done for the true Gregorian
+	calendar as decreed by Pope Gregory XIII. This has a discontinuity
+	<SPAN STYLE="text-decoration: none">so</SPAN> that the day after 4
+	October 1582 is 15 October 1582. This is the calendar almost
+	universally used today and what udunits works with today. timenc has
+	worked this way since revision 1.10 in 2000.</P>
+	<LI><P>calendar = 'proleptic_gregorian'. In this case the relevant
+	calculations are done using the matlab functions datenum and datevec
+	which simply extend the way our present calendar works backwards
+	into the past. This is called the <A HREF="http://en.wikipedia.org/wiki/Proleptic_Gregorian_Calendar">proleptic
+	Gregorian calendar</A>. Accordingly, dates are continuous, i.e., the
+	day after 4 October 1582 is 5 October 1582, but does NOT correspond
+	to historical time anywhere. As well there is a year zero. timenc
+	used to work this way before revision 1.10 in the year 2000 and I
+	believe that udunits also did at some stage in the past.</P>
+	<LI><P>calendar == 'noleap', '365_day'. Here it is assumed that
+	every year has 365 days.</P>
+	<LI><P>calendar == 'all_leap', '366_day'. Here it is assumed that
+	every year has 366 days.</P>
+	<LI><P>calendar == '360_day'. Here it is assumed that every year has
+	360 days and every month has 30 days.</P>
+</OL>
+<P>Note that other values of the calendar attribute produce an error
+message. This can usually be avoided by the user specifying the
+calendar explicitly in the call to timenc.</P>
+<P>The general form of a timenc call is:</P>
+<P>[gregorian_time, serial_time, gregorian_base, serial_base, sizem,
+serial_time_jd, serial_base_jd] = timenc(file, time_var, corner,
+end_point);</P>
+<P STYLE="margin-bottom: 0in">A full description of the options can
+be found by typing help timenc in matlab.</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=5>Examples</FONT></FONT></P>
+<P>In the following examples we use our standard OPeNDAP file
+sst_cac_recon_ltm.nc.</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get an entire
+	array</FONT></FONT> 
+	</P>
+</UL>
+<P>The simplest command line call to make is the following:</P>
+<PRE>&gt;&gt; file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; [gregorian_time, serial_time] = timenc(file);</PRE><P>
+Note that since the time-like variable is named 'time' we did not
+even have to put in its name. We now look at the matrix that contains
+the gregorian time.</P>
+<PRE>&gt;&gt; gregorian_time(1, :)
+ans =
+ 1.0e+03 *
+ 1.9900 0.0010 0.0010 0 0 0.0000
+&gt;&gt; gregorian_time
+ans =
+ 1990 1 1 0 0 0
+ 1990 1 2 0 0 0
+ 1990 2 10 12 0 0</PRE><P>
+Each row of the the matrix gregorian_time contains a time in year,
+month, day, minute, hour, second format. Thus the last date is for
+noon, 10 February, 1990. We can see the same thing by looking at the
+vector serial_time.</P>
+<PRE>&gt;&gt; size(serial_time)
+ans =
+ 3 1
+&gt;&gt; datestr(serial_time)
+ans =
+01-Jan-1990 00:00:00
+02-Jan-1990 00:00:00
+10-Feb-1990 12:00:00</PRE><P>
+serial_time gives the time in the format used by matlab's functions
+datenum, datevec and datestr. Thus we can use datestr to print out
+the last date.</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get part of an
+	array</FONT></FONT> 
+	</P>
+</UL>
+<P>Here we get the 1<SUP>st</SUP> and 2<SUP>nd</SUP> dates.</P>
+<PRE>&gt;&gt; [gregorian_time, serial_time] = timenc(file, 'time', 1, 2);
+&gt;&gt; datestr(serial_time) 
+ans =
+01-Jan-1990 00:00:00
+02-Jan-1990 00:00:00</PRE>
+<HR>
+<H1><A NAME="attnc"></A>attnc</H1>
+<P>attnc returns selected attributes of a netcdf file or DODS/OPeNDAP
+dataset. The first form of an attnc call is:</P>
+<P><B>att_val = attnc(file, var_name, att_name);</B></P>
+<P>In this case it simply returns the value of a named attribute. You
+can use the var_name 'global' to retrieve a global attribute.</P>
+<P>The second form of the call is:</P>
+<P><B>[att_val, att_name_list] = attnc(file, var_name, att_name);</B></P>
+<P>In this case all of the attributes and their names are returned in
+cells named att_val and att_name_list.</P>
+<P><FONT FACE="Albany, sans-serif"><FONT SIZE=5>Examples</FONT></FONT></P>
+<P>In the following examples we use our standard OPeNDAP file
+test_1.nc.</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get all the
+	attributes of a variable</FONT></FONT> 
+	</P>
+</UL>
+<PRE>&gt;&gt; file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; [att_val, att_name_list] = attnc(file, 'u');
+&gt;&gt; length(att_val)
+ans =
+ 10
+&gt;&gt; att_val{1}
+ans =
+u,5_januarys
+&gt;&gt; att_name_list{1}
+ans =
+long_name</PRE><P STYLE="margin-top: 0.17in; page-break-after: avoid">
+<FONT FACE="Thorndale AMT"><FONT SIZE=3>Here we retrieve all of the
+attributes for the variable <I>u. </I>We see that there are 10
+elements in each cell and that the first attribute has name <I>long_name</I>
+and is a string containing <I>u,5_januarys.</I> </FONT></FONT>
+</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get all of the
+	global attributes</FONT></FONT> 
+	</P>
+</UL>
+<P STYLE="margin-top: 0.17in"><FONT FACE="Albany, sans-serif"><FONT SIZE=4><FONT SIZE=3><FONT FACE="Thorndale AMT">By
+not giving a variable or attribute name we get information about all
+of the global attributes.</FONT></FONT> </FONT></FONT>
+</P>
+<PRE>&gt;&gt; file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; att_name_list
+att_name_list = 
+ 'source'
+&gt;&gt; att_val
+att_val = 
+ 'Test program'</PRE><P>
+In this case there is only one global attribute named source and it
+is a string containing Test program.</P>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get just one
+	attribute of a variable</FONT></FONT> 
+	</P>
+</UL>
+<P STYLE="margin-top: 0.17in"><FONT FACE="Thorndale AMT"><FONT SIZE=3>By
+giving the variable and attribute names we can get simply the value
+of the attribute.</FONT></FONT></P>
+<PRE>&gt;&gt; [att_val, att_name_list] = attnc(file, 'u', '_FillValue');
+&gt;&gt; att_val
+att_val =
+ 1.0000e+16</PRE>
+<UL>
+	<LI><P><FONT SIZE=4><FONT FACE="Albany, sans-serif">Get just one
+	global attribute</FONT></FONT> 
+	</P>
+</UL>
+<P>A single global attribute can be retrieved by using the name
+'global' in the call to attnc as below.</P>
+<PRE>&gt;&gt; [att_val, att_name_list] = attnc(file, 'global', 'source'); 
+&gt;&gt; att_val 
+att_val =
+Test program</PRE>
+<HR>
+<H1><A NAME="ddsnc"></A>ddsnc</H1>
+<P>ddsnc returns information about a netcdf file or DODS/OPEnDAP
+dataset. The general form of a ddsnc call is:</P>
+<P>desc = ddsnc(file)</P>
+<P>desc is a matlab structure. For an OPEnDAP data set desc will
+contain all of the information in the DDS (<A HREF="http://www.opendap.org/user/guide-html/guide_65.html#id1">Dataset
+Description Structure</A>). For a netCDF file desc will be almost
+identical. (It cannot be exactly the same since netCDF files are not
+identical to OPeNDAP data sets.)</P>
+<P><FONT FACE="Albany, sans-serif"><FONT SIZE=5>Examples</FONT></FONT></P>
+<P>Information about the Reynolds data set can be found as follows:</P>
+<PRE>&gt;&gt; file = 'http://www.marine.csiro.au/dods/nph-dods/dods-data/test_data/test_1.nc';
+&gt;&gt; desc = ddsnc(file
+desc = 
+ variable: [1x14 struct]
+ dimension: [1x5 struct]</PRE><P>
+desc has 2 fields - variable and dimension. Looking at one element we
+see</P>
+<PRE>&gt;&gt; desc.variable(2)
+ans = 
+ type: 'Float32'
+ name: 'u'
+ dim_statement: {'depth1 = 12' 'depth2 = 11'}
+ dim_idents: [2x1 double]</PRE><P>
+The first 2 fields tell us that the variable is named 'u' and is a 32
+byte float (single precision real). The dim_statement field tells us
+that the u variable has 2 dimensions in the order given. For
+dim_idents we see</P>
+<PRE STYLE="margin-bottom: 0.2in">&gt;&gt; desc.variable(2).dim_idents
+ans =
+ 2
+ 3</PRE><P>
+These integers refer to the dimensions of the u array. Looking at
+desc.dimension(2) and&nbsp;desc.dimension(3) we see 
+</P>
+<PRE>&gt;&gt; desc.dimension(2)
+ans = 
+ name: 'depth1'
+ length: 12
+&gt;&gt; desc.dimension(3) 
+ans = 
+ name: 'depth2'
+ length: 11</PRE><P STYLE="margin-bottom: 0in">
+That is index 2 points us to the 2nd dimension, depth1 and it has
+length 12. (We saw the same information in the dim_statement field
+earlier.) A generic program could then retrieve the information by
+setting:</P>
+<PRE STYLE="margin-bottom: 0.2in">&gt;&gt; ii = desc.variable(2).dim_idents(1);</PRE><P STYLE="margin-bottom: 0in">
+and then referring to desc.dimension(ii).</P>
+<HR>
+<H1><A NAME="whatnc"></A>whatnc</H1>
+<P>whatnc lists all of the netCDF files (including compressed ones)
+in the current directory. It also lists all of the netCDF files in
+the common data set.</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=5>Example</FONT></FONT></P>
+<P>Below is a possible listing returned by whatnc.</P>
+<PRE>&gt;&gt; whatnc
+----- current directory netCDF files -----
+bar.cdf foo.cdf mycdf.cdf test_1.nc test_timenc.nc
+----- current directory compressed netCDF files -----
+EMPTY
+----- common data set of netCDF files -----
+bath_agso_2002.nc soc_climatology.nc
+bath_agso_98.nc sst.mnmean.1981-present.nc</PRE><P>
+The list under the 1<SUP>st</SUP> heading shows all of the files in
+the current directory that seem to be netCDF files. This is based
+simply on whether they end in .cdf or .nc. Note that the .cdf suffix
+was used in the past to indicate a netCDF file but is no longet
+reccommended.</P>
+<P>The list under the 2nd heading shows all of the files that end in
+nc.gz, nc.Z, cdf.gz or cdf.Z. These are presumed to be compressed
+netCDF files.</P>
+<P>The 3<SUP>rd</SUP> list shows netCDF files in the area referred to
+as the common data directory. This directory will be searched by the
+inqnc, attnc and getnc commands and is set by the local system
+manager. This is done by simply editing the pos_cds.m file.</P>
+<HR>
+<H1><A NAME="Installation"></A>Installation</H1>
+<P>The CSIRO interface has been installed on both unix and Windows pc
+systems. Installation is mostly a matter of copying the appropriate
+files to directories and then making them visible to matlab.
+Accordingly the experience should easily translate to other operating
+systems.</P>
+<OL>
+	<LI><P>Download either <A HREF="ftp://ftp.marine.csiro.au/pub/mansbrid/matlab_netCDF_OPeNDAP.tar.gz">matlab_netCDF_OPeNDAP.tar.gz</A>
+	or <A HREF="ftp://ftp.marine.csiro.au/pub/mansbrid/matlab_netCDF_OPeNDAP.zip">matlab_netCDF_OPeNDAP.zip</A>
+	(the files in each are identical).</P>
+	<LI><P>Copy the file to a chosen directory and expand it using
+	either gunzip and tar or unzip as appropriate. Note that this
+	directory needs to be visible to matlab. You may need to use the
+	matlab command addpath in your startup.m file to ensure this.
+	Alternatively, a system administrator may set this up.</P>
+	<LI><P>To be able to read local netCDF files you need to install one
+	or more drivers &ndash; they are described <A HREF="#Drivers">here</A>.</P>
+	<LI><P>The CSIRO interface needs to be told which driver to use to
+	read a given type of file. It can get this information from the file
+	CSIRO_get_globals.m. A documented example is included with the
+	interface and you should edit it to fit your local requirements.</P>
+</OL>
+<OL START=5>
+	<LI><P>If you have a local data set of netCDF files that you want to
+	be accessible to matlab without the user having to specify the path
+	name then you can edit the file pos_cds.m. This matlab function will
+	be used by getnc, attnc, timenc, inqnc, ddsnc and whatnc when it is
+	trying to find a given netCDF file.</P>
+	<LI><P>whatnc can print a message that is specific to a given site.
+	Simply create a matlab script named message_for_whatnc.m and put it
+	in the same directory as whatnc.m. After whatnc has printed its
+	primary information it will print the local message that it gets
+	from message_for_whatnc.m. A documented example script is included
+	with the interface and you should edit it to fit your local
+	requirements.</P>
+	<LI><P>When the directory structure was expanded in step 1 a
+	subdirectory named test was created. To test the installation go to
+	this subdirectory, start matlab and type test_all. This gives you
+	options to test both the netCDF and the OPeNDAP installations. It
+	does that by reading some data from a supplied netCDF file or from
+	an OPeNDAP server. The data are compared to those in a supplied
+	mat-file. The most common error is setting up the matlab paths
+	incorrectly so that part of the interface is not visible to matlab.
+	The testing of the OPeNDAP installation <SPAN STYLE="text-decoration: none">may</SPAN>
+	fail sometimes because of dropouts in the internet somewhere.</P>
+	<P>If you get to the end successfully then test_all will give you a
+	timing message. It is interesting to see how much slower it can be
+	to access the data remotely via the OPeNDAP interface. 
+	</P>
+</OL>
+<P STYLE="margin-left: 0.79in"><B>Note that when testing the OPeNDAP
+installation on a Windows PC there may be a number of warning
+messages. These can be because of an old </B><A HREF="#bug1"><B>bug
+described here</B></A><B>. If you get to the timing message then
+things have worked except for the known bug.</B></P>
+<HR>
+<H1><A NAME="Drivers"></A>Drivers</H1>
+<P>The CSIRO interface is only a wrapper that makes it easier to get
+data. The actual retrieval of the data is carried out by drivers that
+must be obtained from elsewhere and you will need to install one or
+more of these separately. They each have different strengths and
+weaknesses which are described below.</P>
+<H3><A NAME="toolsUI"></A>toolsUi.jar</H3>
+<UL>
+	<LI><P><B>Brief description</B>: toolsUI.jar enables access to the
+	netCDF and OpeNDAP libraries via the java virtual machine that comes
+	included with matlab.</P>
+	<LI><P><B>Advantages</B>: This can retrieve both netCDF files and
+	data from an OPeNDAP server. It is supported by Unidata (who
+	maintain both netCDF and OPeNDAP) and so it is likely to be
+	up-to-date. This may be of special importance as later version of
+	netCDF files become more popular.</P>
+	<LI><P><B>Disadvantages</B>: It may be slower to read netCDF files
+	than the mex driver, ncmex. It has lower memory limits than the
+	mexnc driver &ndash; on a machine with 3 gB of memory it produced
+	&quot;Java.lang.OutOfMemory error &quot; messages retrieving files
+	larger than 147 mB. Someone has to edit the file classpath.txt.</P>
+	<LI><P><B>Installation</B>:</P>
+</UL>
+<OL>
+	<LI><P>toolsUI.jar is a single jar file that is available from
+	<A HREF="http://www.unidata.ucar.edu/software/netcdf-java/">http://www.unidata.ucar.edu/software/netcdf-java/</A>.</P>
+	<LI><P>The file classpath.txt needs to be edited. It is necessary to
+	comment out the line that contains &quot;mwucarunits.jar&quot;. 
+	Then a line pointing to toolsUI.jar should be added so that the jar
+	file will be in the static class path. 
+	</P>
+</OL>
+<UL>
+	<LI><P>The default classpath.txt file resides in the toolbox/local
+	subdirectory of your MATLAB root directory.</P>
+	<LI><P>Reference to the &quot;mwucarunits.jar&quot; file is
+	eliminated because the file contains an old implementation of the
+	Unidata udunits package that conflicts with the more recent version
+	that NetCDF-Java uses. (&quot;mwucarunits.jar&quot; is only used by
+	the Mathworks &quot;Model-Based Calibration Toolbox&quot;.)</P>
+	<LI><P>In the past it was not necessary for the user to add to add
+	toolsUI.jar to the static path because the m-file
+	&ldquo;CSIRO_add_jar_file_maybe.m&rdquo; added the file to the
+	dynamic path. This action was discontinued because it was found that
+	the required call to javaaddpath also cleared all global variables
+	and could thus interfere with the user's other code. It is not clear
+	when (or if) the Mathworks will correct the problem.</P>
+</UL>
+<H3><A NAME="toolsUI1"></A>mexnc</H3>
+<UL>
+	<LI><P><B>Brief description</B>: mexnc enables access to the netCDF
+	libraries via a mex file. In some cases the OpeNDAP libraries are
+	also accessible.</P>
+	<LI><P><B>Advantages</B>: Compared to the java driver it is usually
+	quicker to read a local netCDF file and has less restrictions on
+	memory usage.</P>
+	<LI><P><B>Disadvantages</B>: You may need to build the mex file
+	yourself on Unix-type systems as it may not be possible to find
+	suitable pre-built binaries.</P>
+	<LI><P><B>Installation</B>:</P>
+</UL>
+<OL>
+	<LI><P>Look at the web page <A HREF="http://sourceforge.net/projects/mexcdf/">http://sourceforge.net/projects/mexcdf/</A>
+	and check the download area. The name of the driver has changed over
+	the years and it may be mexnc, mexcdf or mexcdf53. These are all
+	essentially the same thing &ndash; the CSIRO interface expects to
+	find a mex file named mexnc.mex* on linux boxes and mexnc.dll on
+	windows boxes.</P>
+	<LI><P>If you find a binary suitable for your machine and matlab
+	version download and try this. Otherwise you will need to download
+	the source code and make the mex file yourself. (For windows this
+	will be a dll.)</P>
+	<LI><P>When you finally have the mexfile (or dll) you need to put it
+	in the same directory as getnc.m, etc.</P>
+	<LI><P>Note that the download page can be a bit confusing because it
+	describes other packages that are necessary to install the snctools
+	and netCDF toolbox (which are well worth looking at in themselves -
+	see <A HREF="#Alternative">Alternative ways of accessing netCDF and
+	OPeNDAP data</A>).</P>
+</OL>
+<H3>Matlab Command Line Tool</H3>
+<UL>
+	<LI><P><B>Brief description</B>: This package enables access to the
+	OpeNDAP libraries.</P>
+	<LI><P><B>Advantages</B>: Available as precompiled, standalone
+	binaries and mexfiles.</P>
+	<LI><P><B>Disadvantages</B>: You will still need to install one of
+	the other packages to read local netCDF files.</P>
+	<LI><P><B>Installation</B>: Look at the web page you will need
+	suitable copies of the mex and binary files from the <A HREF="http://www.opendap.org/download/ml-cmdln.html">Matlab
+	Command Line Tool</A> package. There are two versions of this
+	package and the CSIRO/netCDF interface will automatically detect
+	whether you have installed the latest or earlier version. For the
+	newest version the interface calls a mex file named <I>loaddap</I>
+	which in turn calls a binary executable named <I>writedap </I>under
+	linux or <I>writedap.exe </I>under Windows. In the older version
+	these files are named <I>loaddods</I> and <I>writeval</I> but do
+	essentially the same thing. There are other differences between the
+	linux and Windows versions and these are described below.</P>
+</UL>
+<P STYLE="margin-left: 0.79in"><B>Unix users</B></P>
+<P STYLE="margin-left: 0.79in">Simply put the appropriate loaddap
+mexfile (e.g., <I>loaddap.mexglx</I>) in a directory seen from your
+matlab path. The binary file <I>writedap</I> should also be put in
+the same directory. (The earlier versions are called <I>loaddods.mex*</I>
+and <I>writeval</I>.)</P>
+<P STYLE="margin-left: 0.79in"><B>Windows users</B></P>
+<P STYLE="margin-left: 0.79in">For Windows things are more
+complicated. From <A HREF="http://www.opendap.org/download/ml-cmdln.html">Matlab
+Command Line Tool</A> you will need both the Matlab Structs Tool
+package (with a name like ml-structs3.5.2-win32.zip) and the libdap
+library (with a name like libdap-prerequisites3.7.3.zip). To make
+things work we took loaddap.dll and writedap.exe from the first
+package and put them into a folder in the matlab search path. We then
+copied the dll files from the libdap prerequisite file to the same
+folder as the dll's. Earlier versions ofthe Matlab Structs Tool
+package had things arranged differently and you needed loaddods.dll
+and writeval.exe. Note that there may be a <A HREF="#bug1">bug in the
+OPeNDAP interface.</A></P>
+<HR>
+<H1><A NAME="Portability"></A>Portability and known problems</H1>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>Portability</FONT></FONT></P>
+<P>The software in this package is entirely made up of matlab script
+files and works for all versions of matlab later than and including
+matlab 6.1 (R12). Portability problems can arise with the binary
+files mexnc, loaddap and writedap which must be downloaded from
+elsewhere.</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>Bugs</FONT></FONT></P>
+<P>There are no known bugs.</P>
+<P><A NAME="bug1"></A>(Before version 3.22 there was be a problem on
+Windows PCs and some linux boxes when using OPeNDAP . The package
+could give the wrong result when reading variables which are
+character arrays. The problem is with the loaddap (loaddods) mex file
+and will presumably be fixed sometime in the future. At present there
+is a workaround in the timenc and getnc_s functions.)</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>Confusion
+with missing values</FONT></FONT></P>
+<P>When reading some netCDF files getnc will return a missing value
+indicator (by default a NaN) in some places where there shouldn't be
+one. This is not due to a bug in getnc but occurs when the netCDF
+file is not following the attribute conventions (see
+<A HREF="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions">http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions</A>).
+Two relevant quotes from the documentation are:</P>
+<PRE STYLE="margin-bottom: 0.2in">The type of each valid_range, valid_min and valid_max attribute should match the type of its variable
+(except that for byte data, these can be of a signed integral type to specify the intended range).</PRE><P>
+and</P>
+<PRE STYLE="margin-bottom: 0.2in">If _FillValue is defined then it should be scalar and of the same type as the variable.</PRE><P>
+To illustrate what this means and how a problem can occur consider
+the following extract from an example cdl file.</P>
+<PRE>short airtemp(time, lat, lon) ;
+ airtemp:long_name = &quot;Air temperature at surface&quot; ;
+ airtemp:valid_range = -10000s, 10000s ;
+ airtemp:units = &quot;degC&quot; ;
+ airtemp:scale_factor = 0.01f ;
+ airtemp:_FillValue = 32766s ;</PRE><P>
+What has happened here is that the creator of the netCDF file has
+chosen to save space by storing the data as shorts (2 byte integers).
+The software reading the data will then multiply the add_offset of
+0.01 by the integer values to produce the floating point value of the
+air temperature. Since the integers can take values between -32768
+and 32767 then this can represent temperatures of between -327.68 and
+327.67 degrees with a resolution of 0.01 degrees.</P>
+<P>Note, however, that the valid_range goes from -10000 to 10000.
+Generic software interprets values outside of this range as faulty in
+some way and the default behaviour of getnc is to replace such values
+with a NaN. The creator of the file can use this to mark missing or
+contaminated data. Since the temperatures implied by these limits are
+-100 and 100 Celsius then the limits are &ldquo;safe&rdquo; since
+they represent physically unreasonable data.</P>
+<P>This way of defining the valid_range is what is specified in the
+earlier quote.</P>
+<P>A problem arises when the creator of the netCDF file
+misunderstands the attribute convention. They choose an &ldquo;intuitive&rdquo;
+definition of the attribute like:</P>
+<PRE STYLE="margin-bottom: 0.2in">airtemp:valid_range = -100.0f, 100.0f ;</PRE><P>
+Here they are thinking in terms of the true air temperature rather
+than the scaled version stored as integers. When getnc reads the
+valid_range attribute it then multiplies it by 0.01 and concludes
+that any temperatures outside the range of -1.0 to 1.0 are to be
+replaced by NaNs. Note that the same problem&nbsp;occurs when the
+file's creator makes the same error with other attributes &ndash;
+valid_min, valid_max, _<SPAN STYLE="text-decoration: none">FillValue
+and missing_value.</SPAN></P>
+<P>There are several workarounds for this problem. The simplest is to
+pass getnc the argument <I>change_miss</I> = 1. This will cause all
+values to be passed unchanged (apart from the rescaling implied by
+the scale_factor attribute). The disadvantage is that when very large
+values were used to indicate faulty data these will also be returned
+- in the example above you might end up with some temperatures
+greater than 100C.</P>
+<P>The trickier, but more satisfactory option, it to use the
+<I>rescale_opts </I>option in getnc. It was designed to deal with
+errant netCDF files and is described <A HREF="#rescale_opts">here</A>.</P>
+<HR>
+<H1><A NAME="Revision"></A>Revision history</H1>
+<P>The following is a partial history of revisions. I intend to keep
+it more up-to-date from version 3.0 onwards. In particular, bug fixes
+will be recorded.</P>
+<UL>
+	<LI><P><A NAME="toolsUI2"></A><I><B>Version 4.03 : </B>October 17
+	2007:</I> Made the way err_opt is handled consistent with the
+	documentation. Changed the default setup for reading OpeNDAP files
+	to work around a matlab bug with javaaddpath (see ).</P>
+	<LI><P><A NAME="toolsUI21"></A><I><B>Version 4.02 : </B>September 7
+	2007:</I> Things now behave more gracefully if you run matlab with
+	the -nojvm option but have things set to use toolsUi.jar to read
+	OpeNDAP files.</P>
+	<LI><P><I><B>Version 4.01 : </B>September 3 2007:</I> A minor bug in
+	the getnc bounds checking was corrected.</P>
+	<LI><P><I><B>Version 4.0 : </B>August 20 2007:</I> Can now use the
+	toolsUI.jar package to read both netCDF and OpeNDAP files. inqnc and
+	the interactive version of getnc had major re-writes.</P>
+	<LI><P><I><B>Version 3.33 : </B>January 12 2007:</I> Handles the
+	latest version of the Matlab Struct Tools under Windows
+	(loaddap.dll, etc).</P>
+	<LI><P><I><B>Version 3.32 : </B>December 4 2006:</I> get_dods_dds
+	can now deal with spaces in directory names under windows.</P>
+</UL>
+<UL>
+	<LI><P><B><I>Version 3.31</I></B> : November 29 <I>2006</I>: timenc
+	can handle more calendar types.</P>
+	<LI><P><B><I>Version 3.30</I></B> : June 30 <I>2006</I>: getnc error
+	handling and input method made more versatile.</P>
+	<LI><P STYLE="margin-bottom: 0in"><B><I>Version 3.22</I></B> : April
+	<I>24 2006</I>: Minor changes to timenc and getnc_s to work around a
+	bug in loaddods (and maybe loaddap) which cause errors when
+	retrieving an array of characters. 
+	</P>
+	<LI><P><B><I>Version 3.21</I></B> : <I>January 27 2006</I>: Minor
+	changes were made to enable it the work properly on matlab 6.1
+	(R12).</P>
+	<LI><P><B><I>Version 3.2</I></B> : <I>December 19 2</I>005: The new
+	function ddsnc was added to the interface.</P>
+	<LI><P><B><I>Version 3.1</I></B> : <I>December 6 2</I>005: Handles
+	OPeNDAP files other than those that are native netCDF files; works
+	(mostly) on windows boxes.</P>
+	<LI><P><B><I>Version 3.01</I></B> : <I>October 27</I> 2005: Bug fix;
+	it caused attnc to fall over when 3 input arguments were passed for
+	an OPeNDAP file.</P>
+</UL>
+<UL>
+	<LI><P><I><B>Version 3.0</B> : October 24</I> 2005: Able to access
+	OPeNDAP data sets as well as netCDF ones. Calls mexnc. Minor bug fix
+	in fill_var.m.</P>
+	<LI><P><I><B>Version 2.4</B> : July 3 2000: </I>timenc was
+	generalised so that it could handle dates before the introduction of
+	the Gregorian calendar on October 15, 1582; it now works back to the
+	year -4712. The earlier version could give incorrect dates for files
+	which used the pre-Gregorian calendar in either the time vector
+	values or in its 'units' attribute. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><I><B>Version 2.3 </B>: April 22
+	1998: </I>timenc was generalised so that when requested it will
+	return only part of the time vector. It can also return the length
+	of the time vector as a separate variable. 
+	</P>
+	<LI><P><I><B>Version 2.2</B> : December 12 1997:</I> attnc was
+	generalised so that when the user does not specify the name of the
+	variable's attribute then all of the attributes (and their names)
+	will be returned in cells. 
+	</P>
+	<LI><P><I><B>Version 2.1</B> : September 24 1997: </I>Explanatory
+	web page first made public.</P>
+	<LI><P STYLE="font-style: normal"><I><B>Version 2.0</B> : April 28
+	1997: </I>Functions renamed to getnc, timenc, etc.</P>
+	<LI><P STYLE="font-style: normal"><I><B>Version 1.0</B>: June 1
+	1993: </I>Initial release.</P>
+</UL>
+<HR>
+<H1><A NAME="Alternative"></A>Alternative ways of accessing netCDF
+and OPeNDAP data</H1>
+<P>There are a number of alternative ways of reading netCDF and
+OPeNDAP data into matlab. In most cases the time and computer
+resources taken to retrieve data will depend mostly on external
+factors such as internet bandwidth and disk access speed. Hence it
+would be surprising if one of these methods was significantly more
+efficient than any of the others.</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>netCDF</FONT></FONT></P>
+<UL>
+	<LI><P><A HREF="http://mexcdf.sourceforge.net/snctools_overview.html">snctools</A>
+	is a set of matlab functions that lets you read and write netCDF
+	files. It uses mexnc for basic access to netCDF libraries.</P>
+</UL>
+<UL>
+	<LI><P><A HREF="http://mexcdf.sourceforge.net/netcdf_toolbox.html">netCDF
+	toolbox</A> is an object-oriented way to read and write netCDF files
+	and is neat to use once you figure out what is going on. It is being
+	maintained but no longer developed.</P>
+</UL>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4>OPeNDAP</FONT></FONT></P>
+<UL>
+	<LI><P><A HREF="http://www.opendap.org/download/ml-cmdln.html">Matlab
+	Command Line Tool </A>is a low-level interface to OPeNDAP data.</P>
+</UL>
+<UL>
+	<LI><P><A HREF="http://opendap.org/user/mgui-html/index.html">OPeNDAP
+	Matlab Graphical User Interface</A> is a friendly GUI for reading
+	OPeNDAP data.</P>
+</UL>
+<HR>
+<H1><A NAME="Disclaimer"></A>Disclaimer</H1>
+<P>This software is provided &quot;as is&quot; without warranty of
+any kind. It is covered by a general <A HREF="http://www.csiro.au/legalnotices/disclaimer.html">CSIRO
+Legal Notice and Disclaimer</A>.</P>
+<HR>
+<H1><A NAME="People"></A>People involved in the development of the
+interface</H1>
+<P>The CSIRO matlab interface has been mostly written by Jim
+Mansbridge with some input from Peter McIntosh and Rose O'Connor (all
+of CSIRO).</P>
+<P>Early versions of a mex file interface to netCDF (called xnetcdf)
+were worked on by Peter McIntosh and Jim Mansbridge. A series of much
+improved versions were created by Chuck Denham (USGS); these had
+names like mexcdf, mexcdf53 and ncmex. John Evans (Rutgers) has then
+developed the code further as mexnc and now maintains the project.</P>
+<P>The Matlab Command Line Tool (from which loaddap and writedap are
+taken) was written by Glenn Flierl (MIT) and James Gallagher (URI).</P>
+<HR>
+<H1><A NAME="Contact"></A>Contact details</H1>
+<P>This web page is maintained by Jim Mansbridge, CSIRO Marine and
+Atmospheric Research.</P>
+<P><B>Postal address:</B> GPO Box 1538, Hobart, Tasmania 7001,
+Australia<BR><B>Phone:</B> +61-3-62 32 5416 <BR><B>Fax:</B> +61-3-62
+32 5123</P>
+<P ALIGN=LEFT><IMG SRC="http://www.marine.csiro.au/%7Emansbrid/jmaddress1.gif" NAME="graphics1" ALIGN=BOTTOM WIDTH=287 HEIGHT=29 BORDER=0></P>
+<HR>
+<P STYLE="margin-bottom: 0in">This page is
+<A HREF="http://www.marine.csiro.au/sw/matlab-netcdf.html">http://www.marine.csiro.au/sw/matlab-netcdf.html</A>.
+</P>
+<HR>
+<P STYLE="margin-bottom: 0in">Visitors since 27 October 2005:&nbsp;<!--#include virtual="/cgi-bin/hits"-->
+</P>
+<HR>
+<P ALIGN=LEFT>Further details on the research of the CSIRO Marine and
+Atmospheric Research are available through the <A HREF="http://www.cmar.csiro.au/">CMAR
+Home Page</A>.</P>
+<P ALIGN=LEFT>For more information contact reception@marine.csiro.au
+or telephone +61-3-62325222. Unless otherwise indicated all contents
+in these web documents are copyright &copy; 1997 CSIRO. 
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,145 @@
+# MESH DEFINITION
+
+# Number of elements x [std=8]
+mesh_elements_x = 10
+# Number of elements y [std=12]
+mesh_elements_y = 10
+# Mesh x bottom limit [std=-1.5]
+mesh_xlim_a = -2
+# Mesh x upper limit [std=1.5]
+mesh_xlim_b = 2
+# Mesh y bottom limit [std=0.0]
+mesh_ylim_a = 0
+# Mesh y upper limit [std=4.0]
+mesh_ylim_b = 4
+
+
+# REFINEMENT PARAMETERS
+
+#global tolerance
+global_stokes_tolerance = 0.05
+
+# Maximum Number of Refinements const ; generally = base_max_h_level - 1
+max_r_steps = 2
+# Base refine fraction Real ;//std=0.3
+base_refine_fraction = 0.30
+# Base coarsen fraction Real //std=0.2
+base_coarsen_fraction = 0.20
+# Base Max h leve int ;//std=1
+base_max_h_level = 3
+# Last refine fraction Real ;//std=0.10
+last_refine_fraction = 0.10
+# Last max h level int; = 1 means no refinement
+last_max_h_level = 2
+
+# PHYSICAL PROPERTIES
+
+# Internal fluid density
+RhoA = 100
+# External fluid density
+RhoB = 1
+# Internal fluid viscosity std=0.5
+MuA = 35
+# External fluid viscosity
+MuB = 0.1
+#Adimensional Reynolds number 5680.5;//1.09191;
+Re = 1091.91
+# Adimensional Weber Number ;//102040.8;//1.0204;//
+We = 1
+# Adimensional Froude number ;//10.1;//0.319;//
+Fr = 1
+
+
+#RESULTS PARAMETERS
+
+# Global output save interval const int
+save_interval = 1
+# Reinitialization save interval const int
+save_tau_interval = 1
+# Custom Output folder
+custom_output_foldername = './outputs/test_refinements'
+
+
+
+#CONTROL PARAMETERS
+
+# Maximum number of timesteps unsigned int
+n_timesteps = 1
+# Maximum nonlinear timesteps unsigned int
+max_nonlinear_tsteps = n_timesteps
+# Maximum number of nonlinear steps unsigned int ;//std=15
+n_nonlinear_steps = 8
+# Maximum number of nonlinear steps unsigned int ;//std=15 (sim [] these param)
+n_nonlinear_steps_ceil = 4
+# Minimum number of nonlinear steps unsigned int ;//std=15
+n_nonlinear_steps_ceil = 3
+# Nonlinear tolerance Real
+nonlinear_tolerance = 1.e-4
+# Maximum Linear Solver iterations
+linsolver_max_iterations = 2000
+# Max CFL for reducing time step
+cfl_ceil = 0.6
+# Maximum acceptable norm_delta_0 Real ;//0.04;//600
+cfl_bottom = 0.3
+# Initial timestep Real  //std = 0.005
+dt = 0.1
+# Minimum timestep Real
+dt_min = 0.000005
+# Allow or disallow variable timesteps bool
+variable_dt = 0
+# Artificial diffusion on Level Set advection Real ;//std = 0.02
+artificial_diffusion_lvl = 0.0000001
+# Turn Gravity on or off
+gravity_on = 0
+# Boundary conditions true if velocity is fixed in the box [bool]
+boundary_close_box = 1
+# Top lid is moving? [bool]
+lid_moving = 0
+# Lid velocity when lid is moving
+lid_velocity = 1.0
+# SUPG tsupg = tsupg*stokes_tau_factor (0 disables supg on stokes)
+stokes_tau_factor = 0.1
+# Initial lvlset function selector [0] function_one_bubble
+#                                  [1] function_two_bubbles
+#                                  [2] function_test_reinit
+#                                  [3] function_eliptic_bubble
+#                                  [4] function_supg
+#                                  [5] function_one_phase
+initial_lvlset_function = 1
+
+
+# REINITIALIZATION PARAMETERS
+
+# Artificial diffusion on Reinitialization Equation Real;//std = 0.005 ou 0.0001
+artificial_diffusion_reinit = 0.0005
+# Use sussman corrector [bool] std=1 ou 0
+sussman_corrector = 0
+# Initial reinitialization timestep Real ; //std = 0.1 to be removed
+initial_dt_tau = 1
+# Reinitialization timestep Real
+dt_tau = initial_dt_tau
+# Reinitialization save step
+reinit_record_step = 50
+# Reinitialization initial number of timesteps int
+n_initial_tau_steps = 60
+# Number of reinitialization timesteps per global timestep int
+n_tau_steps = 20
+# Number of reinitialization timesteps for last global iteration int
+last_n_tau_steps = 300;
+# Reinitialization tolerance Real
+reinit_tolerance = 2.e-4
+# Using SUPG constant [bool]
+ksupg_reinit_on = 1
+# Factor of tau_supg = vars/supg_factor
+supg_factor = 2.0;
+# Diffusion factor for low velocity epsilon=epsilon*thisvar std=3.0
+diffusion_factor_lowveloc = 2.0
+# Lower Velocity limit for setting diffusion factor std=0.0 ou 0.6
+velocity_low_limit = 0.0
+
+
+
+
+
+  
+

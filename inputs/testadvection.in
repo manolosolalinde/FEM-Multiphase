@@ -1,0 +1,145 @@
+
+# PHYSICAL PROPERTIES
+
+# Internal fluid density
+RhoA = 0.01
+
+# External fluid density
+RhoB = 1
+
+# Internal fluid viscosity
+MuA = 0.5
+
+# External fluid density
+MuB = 1
+
+#Adimensional Reynolds number 5680.5;//3.1944;
+Re = 3.1944
+
+# Adimensional Weber Number ;//102040.8;//1.0204;//
+We = 1.0204
+
+# Adimensional Froude number ;//10.1;//0.319;//
+Fr = 0.319
+
+
+# RESULTS PARAMETERS
+
+# Global output save interval const int
+save_interval = 10
+
+# Reinitialization save interval const int
+save_tau_interval = 5
+
+# Custom Output folder
+custom_output_foldername = './outputs/tests'
+
+
+#CONTROL PARAMETERS
+
+# Maximum number of timesteps unsigned int
+n_timesteps = 3000
+
+# Maximum nonlinear timesteps unsigned int
+max_nonlinear_tsteps = n_timesteps
+
+# Maximum number of nonlinear steps unsigned int ;//std=15
+n_nonlinear_steps = 15
+
+# Nonlinear tolerance Real
+nonlinear_tolerance = 1.e-4
+
+# Maximum Linear Solver iterations
+unsigned int linsolver_max_iterations = 2000
+
+# Minimum acceptable norm_delta_0 Real ;//0.012;//30
+norm_delta_0_bottom = 30
+
+# Maximum acceptable norm_delta_0 Real ;//0.04;//600
+norm_delta_0_ceil = 600
+
+# Initial timestep Real  //std = 0.005
+dt = 0.1
+
+# Minimum timestep Real
+dt_min = 0.000005
+
+# Allow or disallow variable timesteps [bool]
+variable_dt = 0
+
+# Artificial diffusion on Level Set advection Real ;//std = 0.02
+artificial_diffusion_lvl = 0.00001
+
+# Artificial diffusion on Reinitialization Equation Real ;//std = 0.015
+artificial_diffusion_reinit = 0.005
+
+# Test Advection Function - Set constant Velocity field
+test_advection = 1
+
+# Test Velocity for advection std=0.4
+test_velocity = 0.4
+
+# Initial lvlset function selector [0] function_one_bubble
+#                                  [1] function_two_bubbles
+#                                  [2] function_test_reinit
+#                                  [3] function_eliptic_bubble
+#                                  [4] function_supg
+initial_lvlset_function = 0
+
+
+
+# REINITIALIZATION PARAMETERS
+
+# Test Reinitialization Function
+# Use modified initial values (testreinit_exact_value) [Bool]
+test_reinit = 1
+
+# Use sussman corrector [bool]
+sussman_corrector = 1
+
+# Initial reinitialization timestep Real ; //std = 0.1 to be removed
+initial_dt_tau = 0.1
+
+# Reinitialization timestep Real
+dt_tau = initial_dt_tau
+
+# Reinitialization save step //to be removed
+reinit_record_step = 1
+
+# Reinitialization initial number of timesteps int
+n_initial_tau_steps = 0
+
+# Number of reinitialization timesteps per global timestep int
+n_tau_steps = 10
+
+# Number of reinitialization timesteps for last global iteration int
+last_n_tau_steps = 0;
+
+# Reinitialization tolerance Real
+reinit_tolerance = 2.e-3
+
+
+# REFINEMENT PARAMETERS
+
+# Maximum Number of Refinements const ; //std=1 refinement steps per time step.
+unsigned int max_r_steps = 1
+
+# Base refine fraction Real ;//std=0.3
+base_refine_fraction = 0.30
+
+# Base coarsen fraction Real //std=0.2
+base_coarsen_fraction = 0.20
+
+# Base Max h leve int ;//std=1
+base_max_h_level = 1
+
+# Last refine fraction Real ;//std=0.10
+last_refine_fraction = 0.10
+
+# Last max h level int ;//std=2
+last_max_h_level = 2
+
+
+
+  
+

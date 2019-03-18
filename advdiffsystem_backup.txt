@@ -1,0 +1,388 @@
+#include "advdiffsystem.h"
+
+//Class constructor
+ AdvectionDiffusionSystem::AdvectionDiffusionSystem(EquationSystems& es,
+               const std::string& name,
+               const unsigned int number)
+    : TransientLinearImplicitSystem(es, name, number)
+    {
+        this->attach_assemble_function(assemble_advdiff);
+        data.struct_name = name;
+        data.struct_name += " DATA";
+        data.epsilon = 0;
+        data.dt = 0;
+        data.time = -10;
+        data.velocity = NumberVectorValue(0,0);//FIXME - Not ready for 3d
+        data.force = NumberVectorValue(0,0);//FIXME - Not ready for 3d
+        es.parameters.set<AdvDiffStruct*>(data.struct_name) = &data;
+        _es = &es;
+    }
+
+void AdvectionDiffusionSystem::use_on_assemble(System& sys)
+{
+    data_systems.push_back(sys.number());
+    for(unsigned int i=0;i<sys.n_vars();i++)
+    {
+        data_var_list.push_back(sys.variable_name(i));
+    }
+}
+
+void AdvectionDiffusionSystem::attach_variable_for_assemble(System& sys,std::string var_name,std::string grad="base")
+{
+    std::vector<std::string> var_names;
+    _es->build_variable_names(var_names);
+
+    std::vector<std::string>::iterator it;
+    it = std::find(data_var_list.begin(),data_var_list.end(),var_name);
+    if (data_var_list.end() == it)
+    {
+        //Add the new variable to the list
+        data_var_list.push_back(var_name);
+        std::vector<unsigned int> var_info(2,0);
+        var_info[0]=sys.number();
+        var_info[1]=sys.variable_number(var_name);
+        data_var_list_all.insert(std::pair< std::string, std::vector<unsigned int> >(var_name,var_info));
+        std::vector<unsigned int>::iterator itsystems;
+
+        //Now add the new system to the list
+        itsystems = std::find(data_systems.begin(),data_systems.end(),sys.number());
+        if (itsystems == data_systems.end())
+            data_systems.push_back(sys.number());
+    }
+
+    //Note that variables on the lists below may be repeated
+    if (grad.compare("base"))
+    {
+        std::vector<unsigned int> var_info(2,0);
+        var_info[0]=sys.number();
+        var_info[1]=sys.variable_number(var_name);
+        data_var_list_base.insert(std::pair< std::string, std::vector<unsigned int> >(var_name,var_info));
+    }
+    else //will become a switch
+    {
+        std::vector<unsigned int> var_info(2,0);
+        var_info[0]=sys.number();
+        var_info[1]=sys.variable_number(var_name);
+        data_var_list_grad.insert(std::pair< std::string, std::vector<unsigned int> >(var_name,var_info));
+    }
+}
+
+void AdvectionDiffusionSystem::attach_velocity_function(RealVectorValue fptr(EquationSystems&,const std::string&))
+{
+     libmesh_assert (fptr != NULL);
+     f_velocity_ptr = fptr;
+}
+
+void AdvectionDiffusionSystem::attach_force_function(RealVectorValue fptr(EquationSystems&,const std::string&))
+{
+     libmesh_assert (fptr != NULL);
+     f_force_ptr = fptr;
+}
+
+
+void AdvectionDiffusionSystem::assemble_advdiff (EquationSystems& es,
+                  const std::string& system_name)
+{
+
+  
+  // Get a constant reference to the mesh object.
+  const MeshBase& mesh = es.get_mesh();
+
+  // The dimension that we are running
+  const unsigned int dim = mesh.mesh_dimension();
+
+  // Get a reference to each system object.
+  AdvectionDiffusionSystem & system =
+            es.get_system<AdvectionDiffusionSystem>(system_name);
+
+  std::vector<System*> systems;
+  std::vector<int> system_n_vars;
+  for (unsigned int i=0; i<system.data_systems.size(); i++)
+  {
+      systems.push_back(&(es.get_system(system.data_systems[i])));
+      system_n_vars.push_back(systems[i]->n_vars());
+  }
+
+  //Check if every var has been loaded
+  //libmesh_assert(total_n_vars == system.data_var_list.size());
+
+
+  // Numeric ids corresponding to each variable in the system
+  std::vector<unsigned int> name_var;
+  {
+  std::map< std::string, std::vector<unsigned int> >::iterator it;
+  for ( it=system.data_var_list_all.begin() ; it != system.data_var_list_all.end(); it++ )
+  {
+      name_var.push_back((*it).second[1]);
+  }
+
+
+
+  unsigned int var_count=0;
+  for (unsigned int i=0; i<systems.size(); i++)
+      for (unsigned int j=0; j<systems[i]->n_vars(); j++)
+      {
+          name_var.push_back(systems[i]->variable_number (system.data_var_list[var_count]));
+          var_count++;
+      }
+  }
+
+  FEType fe_type = system.variable_type(0);
+
+  AutoPtr<FEBase> fe      (FEBase::build(dim, fe_type));
+  AutoPtr<FEBase> fe_face (FEBase::build(dim, fe_type));
+
+  QGauss qrule (dim,   fe_type.default_quadrature_order());
+  QGauss qface (dim-1, fe_type.default_quadrature_order());
+
+  fe->attach_quadrature_rule      (&qrule);
+  fe_face->attach_quadrature_rule (&qface);
+
+  const std::vector<Real>& JxW      = fe->get_JxW();
+  const std::vector<Real>& JxW_face = fe_face->get_JxW();
+
+  const std::vector<std::vector<Real> >& phi = fe->get_phi();
+  const std::vector<std::vector<Real> >& d2phidx2 = fe->get_d2phidx2();
+  const std::vector<std::vector<Real> >& d2phidy2 = fe->get_d2phidy2();
+  const std::vector<std::vector<Real> >& psi = fe_face->get_phi();
+  const std::vector<std::vector<RealGradient> >& dphi = fe->get_dphi();
+
+  const DofMap& dof_map = system.get_dof_map();
+  std::vector<DofMap*> dof_map_systems;
+  for (unsigned int i=0; i<systems.size(); i++)
+      dof_map_systems.push_back(&(systems[i]->get_dof_map()));
+
+  DenseMatrix<Number> Ke;
+  DenseVector<Number> Fe;
+
+  std::vector<unsigned int> dof_indices;
+  std::vector<std::vector<unsigned int> > dof_indices_name;
+  dof_indices_name.resize(total_n_vars);
+
+  Real dt;
+  Real time;
+  if (system.data.dt!=0)
+      dt = system.data.dt;
+  else
+      dt = es.parameters.get<Real>   ("dt");
+
+  if (system.data.time < 0)
+      time = system.data.time;
+  else
+      time = es.parameters.get<Real> ("time");
+
+  MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
+  const MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
+
+
+
+  std::string data_name = system_name;
+  data_name += " DATA";
+  AdvDiffStruct * data = &system.data;
+  RealVectorValue velocity = data->velocity;
+  RealVectorValue force = data->force;
+  Real epsilon = data->epsilon;
+
+
+
+  for ( ; el != end_el; ++el)
+    {
+      // Store a pointer to the element we are currently
+      // working on.  This allows for nicer syntax later.
+      const Elem* elem = *el;
+
+      // Get the degree of freedom indices for the
+      // current element.  These define where in the global
+      // matrix and right-hand-side this element will
+      // contribute to.
+      dof_map.dof_indices (elem, dof_indices);
+      unsigned int var_count=0;
+      for (unsigned int i=0; i<systems.size(); i++)
+          for (unsigned int j=0; j<systems[i]->n_vars(); j++)
+          {
+              dof_map_systems[i]->dof_indices(elem,dof_indices_name[var_count],name_var[var_count]);
+              var_count++;
+          }
+
+      fe->reinit (elem);
+
+      Ke.resize (dof_indices.size(),
+                 dof_indices.size());
+
+      Fe.resize (dof_indices.size());
+
+      for (unsigned int qp=0; qp<qrule.n_points(); qp++)
+        {
+
+
+          // Values to hold the old solution & its gradient.
+          Number   u_old = 0.;
+          Number vel_u=0;
+          Number vel_v=0;
+          Number d2udx2_old =0;
+          Number d2udy2_old =0;
+          Gradient grad_u_old;
+          std::vector<Real> name (total_n_vars,0);
+          std::vector<Gradient> grad_name (total_n_vars,0);
+
+
+
+          for (unsigned int l=0; l<phi.size(); l++)
+            {
+              u_old   += phi[l][qp]*system.old_solution  (dof_indices[l]);
+              d2udx2_old +=d2phidx2[l][qp]*system.old_solution (dof_indices[l]);
+              d2udy2_old +=d2phidy2[l][qp]*system.old_solution (dof_indices[l]);
+              grad_u_old.add_scaled (dphi[l][qp],system.old_solution (dof_indices[l]));
+
+              var_count=0;
+              for (unsigned int m=0 ; m<systems.size();m++)
+                  for (unsigned int j=0 ; j < systems[m]->n_vars();j++)
+                  {
+                  name[var_count] += phi[l][qp]*systems[m]->current_solution(dof_indices_name[var_count][l]);
+                  grad_name[var_count].add_scaled(dphi[l][qp],systems[m]->current_solution (dof_indices_name[var_count][l]));
+                  var_count++;
+                  }
+            }
+
+          //Set pointers to variables ins data_var_map
+          system.data_var_map.clear();
+          for (unsigned int i=0; i<system.data_var_list.size() ; i++)
+          {
+              system.data_var_map.insert(std::pair<std::string,Real*>(system.data_var_list[i],&name[i]));
+              //system.data_var_map.insert()
+          }
+
+
+          if (system.f_velocity_ptr)
+          {
+              velocity = system.f_velocity_ptr(es,system_name);
+          }
+
+          if (system.f_force_ptr)
+          {
+              force = system.f_force_ptr(es,system_name);
+          }
+
+
+
+          vel_u = velocity(0);
+          vel_v = velocity(1);
+          
+
+          Real tau, Pe_x, Pe_y, alfa_x, alfa_y, mod_vel;
+          Real del_x;
+          del_x = elem->hmin(); //v_f = vel_u
+          Pe_x=(vel_u*del_x)/(2*epsilon);
+          Pe_y=(vel_v*del_x)/(2*epsilon);
+          alfa_x=(1/tanh(Pe_x))-1/Pe_x;
+          alfa_y=(1/tanh(Pe_y))-1/Pe_y;
+          if (fabs(Pe_x) < 1e-9)
+              alfa_x=0;
+          if (fabs(Pe_y) < 1e-9)
+              alfa_y=0;
+          tau=(alfa_x*vel_u*del_x + alfa_y*vel_v*del_x)/(sqrt(15));
+          mod_vel=velocity.size();
+          Real ksupg=tau/mod_vel;
+          if (mod_vel==0)
+              ksupg=0;
+          else
+              ksupg = tau/mod_vel;
+
+          //ksupg = 0;
+          //std::cout << del_x << "  ";
+
+
+
+          // Now compute the element matrix and RHS contributions.
+          //USING THE STREAMLINE DIFFUSION METHOD + CRANK NICHOLSON DISCRETIZATION SCHEME
+          //SET delta_supg_lvlset = 0 for standard galerkin //check Claes Jhonson p 184 for details
+          for (unsigned int i=0; i<phi.size(); i++)
+            {
+              // The RHS contribution
+              Fe(i) += JxW[qp]*(
+                                // Mass matrix term (phi[i][qp] + (tau/mod_vel)*(dphi[i][qp]*velocity))
+                                //u_old*(phi[i][qp]+delta_supg_lvlset*(velocity*dphi[i][qp])) +
+                                u_old*(phi[i][qp] + (ksupg)*(dphi[i][qp]*velocity)) +
+                                -.5*dt*(
+                                        // Convection term
+                                        // (grad_u_old may be complex, so the
+                                        // order here is important!)
+                                        (grad_u_old*velocity)*(phi[i][qp]+(ksupg)*(velocity*dphi[i][qp]))+
+
+                                        // Diffusion term                   (-)?
+                                        epsilon*(grad_u_old*dphi[i][qp])-epsilon*(ksupg)*(dphi[i][qp]*velocity)*(d2udx2_old+d2udy2_old)
+
+                                        )
+                                );
+
+              for (unsigned int j=0; j<phi.size(); j++)
+                {
+                  // The matrix contribution
+                  Ke(i,j) += JxW[qp]*(
+                                      // Mass-matrix
+                                      (phi[i][qp]+(ksupg)*(velocity*dphi[i][qp]))*phi[j][qp] +
+
+                                      0.5*dt*(
+                                             // Convection term
+                                             (velocity*dphi[j][qp])*phi[i][qp] +(ksupg)*(dphi[j][qp]*velocity)*(dphi[i][qp]*velocity)+
+
+                                             // Diffusion term                (-)?
+                                             epsilon*(dphi[i][qp]*dphi[j][qp])-epsilon*(ksupg)*(dphi[i][qp]*velocity)*(d2phidx2[j][qp]+d2phidy2[j][qp])
+
+                                             )
+                                      );
+                }
+            }
+        }
+
+      // At this point the interior element integration has
+      // been completed.  However, we have not yet addressed
+      // boundary conditions.  For this example we will only
+      // consider simple Dirichlet boundary conditions imposed
+      // via the penalty method.
+      //
+      // The following loops over the sides of the element.
+      // If the element has no neighbor on a side then that
+      // side MUST live on a boundary of the domain.
+      {
+        // The penalty value.
+        const Real penalty = 1.e10;
+
+        // The following loops over the sides of the element.
+        // If the element has no neighbor on a side then that
+        // side MUST live on a boundary of the domain.
+        /*for (unsigned int s=0; s<elem->n_sides(); s++)
+          if (elem->neighbor(s) == NULL)
+            {
+              fe_face->reinit(elem,s);
+
+              for (unsigned int qp=0; qp<qface.n_points(); qp++)
+                {
+                  const Number value = 0;
+
+                  // RHS contribution
+                  for (unsigned int i=0; i<psi.size(); i++)
+                    Fe(i) += penalty*JxW_face[qp]*value*psi[i][qp];
+
+                  // Matrix contribution
+                  for (unsigned int i=0; i<psi.size(); i++)
+                    for (unsigned int j=0; j<psi.size(); j++)
+                      Ke(i,j) += penalty*JxW_face[qp]*psi[i][qp]*psi[j][qp];
+                }
+            }*/
+      }
+
+      // If this assembly program were to be used on an adaptive mesh,
+      // we would have to apply any hanging node constraint equations
+      dof_map.constrain_element_matrix_and_vector (Ke, Fe, dof_indices);
+
+      // The element matrix and right-hand-side are now built
+      // for this element.  Add them to the global matrix and
+      // right-hand-side vector.  The \p SparseMatrix::add_matrix()
+      // and \p NumericVector::add_vector() members do this for us.
+      system.matrix->add_matrix (Ke, dof_indices);
+      system.rhs->add_vector    (Fe, dof_indices);
+    }
+
+  // That concludes the system matrix assembly routine.
+}

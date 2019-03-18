@@ -1,0 +1,78 @@
+clear;
+
+filename = 'out_anim_a1.ex2';
+
+level = getnc('out_anim_a1.ex2','vals_nod_var13',[-1,1],[1,-1])';
+velocity = getnc('out_anim_a1.ex2','vals_nod_var8',[-1,1],[1,-1])';
+coordy = getnc('out_anim_a1.ex2','coordy');
+coordx = getnc('out_anim_a1.ex2','coordx');
+time_a = getnc('out_anim_a1.ex2','time_whole')';
+
+i = size(level,2);
+level(:,i) = [];
+velocity(:,i) = [];
+time_a(i) = [];
+
+
+i=1;
+while i<=length(coordx)
+    if coordx(i)~=0
+        coordx(i) = [];
+        coordy(i) = [];
+        level(i,:) = [];
+        velocity(i,:) = [];
+        i=i-1;
+    end;
+    i=i+1;
+end
+
+
+for i=1:(length(level))
+    cfun = fit(coordy,-level(:,i),'splineinterp');%pchipinterp %splineinterp
+    cfun2 = fit(coordy,velocity(:,i),'pchipinterp');%pchipinterp %splineinterp
+    x = fminbnd(cfun,min(coordy),max(coordy));
+    X(i) = x;
+    Curve_a(i) = cfun2(x);
+end;
+
+level = getnc('out_anim_b.ex2','vals_nod_var12',[-1,1],[1,-1])';
+velocity = getnc('out_anim_b.ex2','vals_nod_var7',[-1,1],[1,-1])';
+coordy = getnc('out_anim_b.ex2','coordy');
+coordx = getnc('out_anim_b.ex2','coordx');
+time_b = getnc('out_anim_b.ex2','time_whole')';
+
+i = size(level,2);
+level(:,i) = [];
+velocity(:,i) = [];
+time_b(i) = [];
+
+
+i=1;
+while i<=length(coordx)
+    if coordx(i)~=0
+        coordx(i) = [];
+        coordy(i) = [];
+        level(i,:) = [];
+        velocity(i,:) = [];
+        i=i-1;
+    end;
+    i=i+1;
+end
+
+
+for i=1:(length(level))
+    cfun = fit(coordy,-level(:,i),'pchipinterp');%pchipinterp %splineinterp
+    cfun2 = fit(coordy,velocity(:,i),'pchipinterp');%pchipinterp %splineinterp
+    x = fminbnd(cfun,min(coordy),max(coordy));
+    Curve_b(i) = cfun2(x);
+end;
+
+createfigure(time_a,Curve_a,time_b,Curve_b);
+
+
+    
+    
+    
+    
+    
+    

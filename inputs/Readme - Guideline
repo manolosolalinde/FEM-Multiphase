@@ -1,0 +1,4 @@
+make tester -> run a full simulation test
+make testreinit -> runs a reinitialization function test
+make testadvect -> runs an advection test
+
